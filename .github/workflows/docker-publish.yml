@@ -58,6 +58,16 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           protocol: tcp
           script: |
+
+      - name: copy file via ssh
+        run: |
+          mkdir -v -m 700 $HOME/.ssh
+          ssh-keyscan -H ${{ secrets.VPS_HOST }} > $HOME/.ssh/known_hosts
+          echo "${{ secrets.SSH_KEY }}" > $HOME/.ssh/id_rsa
+          chmod 400 $HOME/.ssh/id_rsa
+
+          ssh -i $HOME/.ssh/id_rsa ${{ secrets.VPS_USERNAME }}@${{ secrets.VPS_HOST }} << 'EOF'
+            
             # Get current timestamp for backup name
             TIMESTAMP=$(date +%Y%m%d_%H%M%S)
             
@@ -76,16 +86,11 @@ jobs:
             # Clean up container's temporary files
             cd ${{ secrets.MONGO_PATH }}
             docker compose exec mongo rm -rf /tmp/backup
+          EOF
 
-      - name: copy file via ssh password
-        uses: appleboy/scp-action@v0.1.7
-        with:
-          host: ${{ secrets.VPS_HOST }}
-          username: ${{ secrets.VPS_USERNAME }}
-          key: ${{ secrets.SSH_KEY }}
-          protocol: tcp
-          source: "/tmp/mongodb_backup_*.tar.gz"
-          target: ./mongodb-backup/
+          scp -i $HOME/.ssh/id_rsa ${{ secrets.VPS_USERNAME }}@${{ secrets.VPS_HOST }}:/tmp/mongodb_backup_*.tar.gz ./mongodb-backup/
+
+          ssh -i $HOME/.ssh/id_rsa ${{ secrets.VPS_USERNAME }}@${{ secrets.VPS_HOST }} rm -rf /tmp/mongodb_backup_*
 
       - name: Cleanup MongoDB backup
         uses: appleboy/ssh-action@v1.2.0
