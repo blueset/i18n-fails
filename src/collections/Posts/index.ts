@@ -165,7 +165,6 @@ export const Posts: CollectionConfig<'posts'> = {
                 },
               }),
               label: false,
-              required: true,
             },
           ],
           label: 'Description',
