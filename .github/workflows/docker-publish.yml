@@ -34,6 +34,10 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Test connection to VPS
+        run: |
+          curl -v http://${{ secrets.VPS_HOST }}
+
       - name: Extract metadata for Docker
         id: meta
         uses: docker/metadata-action@v5
