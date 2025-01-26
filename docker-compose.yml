@@ -2,30 +2,32 @@ version: '3'
 
 services:
   payload:
-    image: node:18-alpine
+    image: ghcr.io/blueset/i18n-fails:master
     ports:
-      - '3000:3000'
+      - '41863:3000'
     volumes:
-      - .:/home/node/app
-      - node_modules:/home/node/app/node_modules
-    working_dir: /home/node/app/
-    command: sh -c "yarn install && yarn dev"
+      - ./public/media:/app/public/media
     depends_on:
       - mongo
     env_file:
       - .env
+    networks:
+      - app-network
 
   mongo:
     image: mongo:latest
-    ports:
-      - '27017:27017'
     command:
       - --storageEngine=wiredTiger
     volumes:
       - data:/data/db
     logging:
       driver: none
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
 
 volumes:
   data:
-  node_modules:
