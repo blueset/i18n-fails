@@ -59,7 +59,7 @@ jobs:
           protocol: tcp
           script: |
 
-      - name: copy file via ssh
+      - name: Execute MongoDB dump
         run: |
           mkdir -v -m 700 $HOME/.ssh
           ssh-keyscan -H ${{ secrets.VPS_HOST }} > $HOME/.ssh/known_hosts
@@ -67,29 +67,37 @@ jobs:
           chmod 400 $HOME/.ssh/id_rsa
 
           ssh -i $HOME/.ssh/id_rsa ${{ secrets.VPS_USERNAME }}@${{ secrets.VPS_HOST }} << 'EOF'
-            
             # Get current timestamp for backup name
             TIMESTAMP=$(date +%Y%m%d_%H%M%S)
             
+            echo cd ${{ secrets.MONGO_PATH }}
             cd ${{ secrets.MONGO_PATH }}
 
             # Create dump in the container
+            echo docker compose exec mongo mongodump --out=/tmp/backup
             docker compose exec mongo mongodump --out=/tmp/backup
             
             # Copy dump from container to host
+            echo docker compose cp mongo:/tmp/backup /tmp/mongodb_backup_${TIMESTAMP}
             docker compose cp mongo:/tmp/backup /tmp/mongodb_backup_${TIMESTAMP}
             
             # Create tar archive
+            echo cd /tmp
             cd /tmp
+            echo tar -czf mongodb_backup_${TIMESTAMP}.tar.gz mongodb_backup_${TIMESTAMP}
             tar -czf mongodb_backup_${TIMESTAMP}.tar.gz mongodb_backup_${TIMESTAMP}
             
             # Clean up container's temporary files
+            echo rm -rf /tmp/backup
             cd ${{ secrets.MONGO_PATH }}
+            echo docker compose exec mongo rm -rf /tmp/backup
             docker compose exec mongo rm -rf /tmp/backup
           EOF
 
+          echo scp -i $HOME/.ssh/id_rsa ${{ secrets.VPS_USERNAME }}@${{ secrets.VPS_HOST }}:/tmp/mongodb_backup_*.tar.gz ./mongodb-backup/
           scp -i $HOME/.ssh/id_rsa ${{ secrets.VPS_USERNAME }}@${{ secrets.VPS_HOST }}:/tmp/mongodb_backup_*.tar.gz ./mongodb-backup/
 
+          echo ssh -i $HOME/.ssh/id_rsa ${{ secrets.VPS_USERNAME }}@${{ secrets.VPS_HOST }} rm -rf /tmp/mongodb_backup_*
           ssh -i $HOME/.ssh/id_rsa ${{ secrets.VPS_USERNAME }}@${{ secrets.VPS_HOST }} rm -rf /tmp/mongodb_backup_*
 
       - name: Cleanup MongoDB backup
