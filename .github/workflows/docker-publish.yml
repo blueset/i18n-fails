@@ -101,3 +101,8 @@ jobs:
         if: always()
         run: |
           rm -rf mongodb-backup/
+
+      - name: Deploy build
+        run: |
+          echo "cd ${{ secrets.MONGO_PATH }} ++ docker compose pull ++ docker compose down ++ docker compose up -d ++ docker system prune -af"
+          ssh -i $HOME/.ssh/id_rsa ${{ secrets.VPS_USERNAME }}@${{ secrets.VPS_HOST }} "cd ${{ secrets.MONGO_PATH }} && docker compose pull && docker compose down && docker compose up -d && docker system prune -af"
