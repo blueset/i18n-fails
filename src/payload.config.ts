@@ -5,6 +5,7 @@ import sharp from 'sharp' // sharp-import
 import path from 'path'
 import { buildConfig, PayloadRequest } from 'payload'
 import { fileURLToPath } from 'url'
+import { nodemailerAdapter } from '@payloadcms/email-nodemailer'
 
 import { Categories } from './collections/Categories'
 import { Media } from './collections/Media'
@@ -19,6 +20,7 @@ import { getServerSideURL } from './utilities/getURL'
 import { Products } from './collections/Products'
 import { Languages } from './collections/Languages'
 import { MongoMemoryReplSet } from 'mongodb-memory-server'
+import { siteTitle } from './utilities/constants'
 
 let memoryDbUri: string | undefined
 let memoryDb: MongoMemoryReplSet | undefined
@@ -115,4 +117,19 @@ export default buildConfig({
     },
     tasks: [],
   },
+  email: process.env.SMTP_FROM
+    ? nodemailerAdapter({
+        defaultFromAddress: process.env.SMTP_FROM,
+        defaultFromName: siteTitle,
+        // Nodemailer transportOptions
+        transportOptions: {
+          host: process.env.SMTP_HOST,
+          port: 587,
+          auth: {
+            user: process.env.SMTP_USER,
+            pass: process.env.SMTP_PASS,
+          },
+        },
+      })
+    : undefined,
 })
