@@ -14,6 +14,9 @@ export const Categories: CollectionConfig = {
   },
   admin: {
     useAsTitle: 'title',
+    pagination: {
+      defaultLimit: 50,
+    },
   },
   fields: [
     {

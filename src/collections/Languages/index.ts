@@ -15,6 +15,9 @@ export const Languages: CollectionConfig = {
   admin: {
     useAsTitle: 'name',
     defaultColumns: ['name', 'nativeName', 'code', 'slug'],
+    pagination: {
+      defaultLimit: 50,
+    },
   },
   fields: [
     {

@@ -38,6 +38,8 @@ export const ImageMedia: React.FC<MediaProps> = (props) => {
   let height: number | undefined
   let alt = altFromProps
   let src: StaticImageData | string = srcFromProps || ''
+  let focalX: number | undefined
+  let focalY: number | undefined
 
   if (!src && resource && typeof resource === 'object') {
     const {
@@ -46,11 +48,15 @@ export const ImageMedia: React.FC<MediaProps> = (props) => {
       height: fullHeight,
       url,
       width: fullWidth,
+      focalX: focalXFromResource,
+      focalY: focalYFromResource,
     } = resource
 
     width = fullWidth!
     height = fullHeight!
     alt = altFromResource || ''
+    focalX = focalXFromResource ?? undefined
+    focalY = focalYFromResource ?? undefined
 
     const cacheTag = resource.updatedAt
 
@@ -68,6 +74,11 @@ export const ImageMedia: React.FC<MediaProps> = (props) => {
 
   const handleOnClick = useRegisterMedia(useLightbox ? (resource as Media) : undefined)
 
+  const style =
+    focalX !== undefined && focalY !== undefined
+      ? { objectPosition: `${focalX * 100}% ${focalY * 100}%` }
+      : undefined
+
   return (
     <picture className={cn(className)}>
       <NextImage
@@ -75,6 +86,7 @@ export const ImageMedia: React.FC<MediaProps> = (props) => {
         title={alt || ''}
         className={cn(imgClassName)}
         fill={fill}
+        style={style}
         height={!fill ? height : undefined}
         placeholder="blur"
         blurDataURL={blurDataURL}

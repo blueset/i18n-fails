@@ -16,6 +16,9 @@ export const Products: CollectionConfig = {
   admin: {
     useAsTitle: 'path',
     defaultColumns: ['title', 'slug', 'path'],
+    pagination: {
+      defaultLimit: 50,
+    },
   },
   fields: [
     {

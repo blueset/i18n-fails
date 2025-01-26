@@ -56,6 +56,9 @@ export const Posts: CollectionConfig<'posts'> = {
   },
   admin: {
     defaultColumns: ['title', 'slug', 'updatedAt'],
+    pagination: {
+      defaultLimit: 50,
+    },
     livePreview: {
       url: ({ data, req }) => {
         const path = generatePreviewPath({
