@@ -61,6 +61,11 @@ export const buildInitialFormState = (fields: ExtendedFormFieldBlock[]) => {
         [field.name]: '',
       }
     }
+    if (field.blockType === 'message') {
+      return {
+        ...initialSchema,
+      }
+    }
     throw new Error(`invalid blocktype: ${field.blockType}`)
   }, {})
 }
