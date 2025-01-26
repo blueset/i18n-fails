@@ -1,5 +1,5 @@
 import type { EmailField } from '@payloadcms/plugin-form-builder/types'
-import type { FieldErrorsImpl, FieldValues, UseFormRegister } from 'react-hook-form'
+import type { Control, FieldErrorsImpl, FieldValues, UseFormRegister } from 'react-hook-form'
 
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -7,6 +7,8 @@ import React from 'react'
 
 import { Error } from '../Error'
 import { Width } from '../Width'
+import { FormField, FormItem, FormLabel, FormControl } from '@/components/ui/form'
+import { Required } from '../Required'
 
 export const Email: React.FC<
   EmailField & {
@@ -15,27 +17,29 @@ export const Email: React.FC<
         [x: string]: any
       }>
     >
+    control: Control<FieldValues, any>
     register: UseFormRegister<FieldValues>
   }
-> = ({ name, defaultValue, errors, label, register, required, width }) => {
+> = ({ name, defaultValue, errors, label, required, control, width }) => {
   return (
     <Width width={width}>
-      <Label htmlFor={name}>
-        {label}
-
-        {required && (
-          <span className="required">
-            * <span className="sr-only">(required)</span>
-          </span>
-        )}
-      </Label>
-      <Input
+      <FormField
+        control={control}
+        name={name}
         defaultValue={defaultValue}
-        id={name}
-        type="text"
-        {...register(name, { pattern: /^\S[^\s@]*@\S+$/, required })}
+        rules={{ required, pattern: /^\S[^\s@]*@\S+$/ }}
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>
+              {label} {required && <Required />}
+            </FormLabel>
+            <FormControl>
+              <Input type="email" required={required} {...field} />
+            </FormControl>
+            {errors[name] && <Error />}
+          </FormItem>
+        )}
       />
-
       {errors[name] && <Error />}
     </Width>
   )

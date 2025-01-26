@@ -15,6 +15,8 @@ import { Controller } from 'react-hook-form'
 import { Error } from '../Error'
 import { Width } from '../Width'
 import { stateOptions } from './options'
+import { FormField, FormItem, FormLabel, FormControl } from '@/components/ui/form'
+import { Required } from '../Required'
 
 export const State: React.FC<
   StateField & {
@@ -25,29 +27,25 @@ export const State: React.FC<
       }>
     >
   }
-> = ({ name, control, errors, label, required, width }) => {
+> = ({ name, control, errors, label, required, defaultValue, width }) => {
   return (
     <Width width={width}>
-      <Label htmlFor={name}>
-        {label}
-        {required && (
-          <span className="required">
-            * <span className="sr-only">(required)</span>
-          </span>
-        )}
-      </Label>
-      <Controller
+      <FormField
         control={control}
-        defaultValue=""
         name={name}
-        render={({ field: { onChange, value } }) => {
-          const controlledValue = stateOptions.find((t) => t.value === value)
-
-          return (
-            <Select onValueChange={(val) => onChange(val)} value={controlledValue?.value}>
-              <SelectTrigger className="w-full" id={name}>
-                <SelectValue placeholder={label} />
-              </SelectTrigger>
+        defaultValue={defaultValue}
+        rules={{ required }}
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>
+              {label} {required && <Required />}
+            </FormLabel>
+            <Select onValueChange={field.onChange} defaultValue={field.value}>
+              <FormControl>
+                <SelectTrigger>
+                  <SelectValue placeholder={label} />
+                </SelectTrigger>
+              </FormControl>
               <SelectContent>
                 {stateOptions.map(({ label, value }) => {
                   return (
@@ -58,11 +56,10 @@ export const State: React.FC<
                 })}
               </SelectContent>
             </Select>
-          )
-        }}
-        rules={{ required }}
+            {errors[name] && <Error />}
+          </FormItem>
+        )}
       />
-      {errors[name] && <Error />}
     </Width>
   )
 }

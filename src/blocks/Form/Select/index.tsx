@@ -1,7 +1,6 @@
 import type { SelectField } from '@payloadcms/plugin-form-builder/types'
 import type { Control, FieldErrorsImpl, FieldValues } from 'react-hook-form'
 
-import { Label } from '@/components/ui/label'
 import {
   Select as SelectComponent,
   SelectContent,
@@ -10,10 +9,11 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import React from 'react'
-import { Controller } from 'react-hook-form'
 
 import { Error } from '../Error'
 import { Width } from '../Width'
+import { FormField, FormItem, FormLabel, FormControl } from '@/components/ui/form'
+import { Required } from '../Required'
 
 export const Select: React.FC<
   SelectField & {
@@ -24,29 +24,25 @@ export const Select: React.FC<
       }>
     >
   }
-> = ({ name, control, errors, label, options, required, width }) => {
+> = ({ name, control, errors, label, options, required, defaultValue, width }) => {
   return (
     <Width width={width}>
-      <Label htmlFor={name}>
-        {label}
-        {required && (
-          <span className="required">
-            * <span className="sr-only">(required)</span>
-          </span>
-        )}
-      </Label>
-      <Controller
+      <FormField
         control={control}
-        defaultValue=""
         name={name}
-        render={({ field: { onChange, value } }) => {
-          const controlledValue = options.find((t) => t.value === value)
-
-          return (
-            <SelectComponent onValueChange={(val) => onChange(val)} value={controlledValue?.value}>
-              <SelectTrigger className="w-full" id={name}>
-                <SelectValue placeholder={label} />
-              </SelectTrigger>
+        defaultValue={defaultValue}
+        rules={{ required }}
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>
+              {label} {required && <Required />}
+            </FormLabel>
+            <SelectComponent onValueChange={field.onChange} defaultValue={field.value}>
+              <FormControl>
+                <SelectTrigger>
+                  <SelectValue placeholder={label} />
+                </SelectTrigger>
+              </FormControl>
               <SelectContent>
                 {options.map(({ label, value }) => {
                   return (
@@ -57,11 +53,10 @@ export const Select: React.FC<
                 })}
               </SelectContent>
             </SelectComponent>
-          )
-        }}
-        rules={{ required }}
+            {errors[name] && <Error />}
+          </FormItem>
+        )}
       />
-      {errors[name] && <Error />}
     </Width>
   )
 }

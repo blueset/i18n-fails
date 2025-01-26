@@ -1,5 +1,5 @@
 import type { CheckboxField } from '@payloadcms/plugin-form-builder/types'
-import type { FieldErrorsImpl, FieldValues, UseFormRegister } from 'react-hook-form'
+import type { Control, FieldErrorsImpl, FieldValues, UseFormRegister } from 'react-hook-form'
 
 import { useFormContext } from 'react-hook-form'
 
@@ -9,6 +9,8 @@ import React from 'react'
 
 import { Error } from '../Error'
 import { Width } from '../Width'
+import { FormField, FormItem, FormControl, FormLabel, FormDescription } from '@/components/ui/form'
+import { Required } from '../Required'
 
 export const Checkbox: React.FC<
   CheckboxField & {
@@ -17,34 +19,33 @@ export const Checkbox: React.FC<
         [x: string]: any
       }>
     >
+    control: Control<FieldValues, any>
     getValues: any
     register: UseFormRegister<FieldValues>
     setValue: any
   }
-> = ({ name, defaultValue, errors, label, register, required, width }) => {
-  const props = register(name, { required: required })
-  const { setValue } = useFormContext()
-
+> = ({ name, control, defaultValue, errors, label, required, width }) => {
   return (
     <Width width={width}>
-      <div className="flex items-center gap-2">
-        <CheckboxUi
-          defaultChecked={defaultValue}
-          id={name}
-          {...props}
-          onCheckedChange={(checked) => {
-            setValue(props.name, checked)
-          }}
-        />
-        <Label htmlFor={name}>
-          {required && (
-            <span className="required">
-              * <span className="sr-only">(required)</span>
-            </span>
-          )}
-          {label}
-        </Label>
-      </div>
+      <FormField
+        control={control}
+        name={name}
+        defaultValue={defaultValue}
+        rules={{ required }}
+        render={({ field }) => (
+          <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+            <FormControl>
+              <CheckboxUi checked={field.value} onCheckedChange={field.onChange} />
+            </FormControl>
+            <div className="space-y-1 leading-none">
+              <FormLabel>
+                {label}
+                {required && <Required />}
+              </FormLabel>
+            </div>
+          </FormItem>
+        )}
+      />
       {errors[name] && <Error />}
     </Width>
   )
