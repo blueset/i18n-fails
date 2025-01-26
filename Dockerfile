@@ -39,7 +39,7 @@ RUN if [ -d "mongodb-backup" ]; then \
     cd mongodb-backup && \
     tar xzf *.tar.gz && \
     mongod --fork --logpath /var/log/mongod.log --bind_ip_all && \
-    mongorestore --host 127.0.0.1 --drop mongodb_backup_*/i18nfails && \
+    mongorestore --host 127.0.0.1 --nsInclude 'i18nfails.*' ./mongodb_backup_*/ && \
     cd ..; \
     fi
 
