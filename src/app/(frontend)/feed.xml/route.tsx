@@ -128,14 +128,29 @@ export async function GET() {
           nodeTypes: ['unknown'],
           converter: async ({ node, parent, ...args }) => {
             if (node.type === 'block') {
-              if ((node as any).fields.blockType === 'mediaBlock') {
+              const blockType = (node as any).fields.blockType
+              if (blockType === 'mediaBlock') {
                 const media = (node as any).fields.media
                 return `<figure>
                   <img src="${escapeHTML(media.url)}" alt="${escapeHTML(media.alt)}" />
                   <figcaption>${media.caption ? await convertLexicalNodesToHTML({ lexicalNodes: media.caption.root.children, parent: { ...node, parent }, ...args }) : ''}</figcaption>
                 </figure>`
+              } else if (blockType === 'banner') {
+                const style = (node as any).fields.style
+                const content = (node as any).fields.content.root.children
+                const styleEmoji =
+                  style === 'info'
+                    ? 'ℹ️'
+                    : style === 'error'
+                      ? '❌'
+                      : style === 'success'
+                        ? '✅'
+                        : style === 'warning'
+                          ? '⚠️'
+                          : `[${style}]`
+                return `<blockquote>${styleEmoji} ${await convertLexicalNodesToHTML({ lexicalNodes: content, parent: { ...node, parent }, ...args })}</blockquote>`
               }
-              return `<div>[Block (${(node as any).fields.blockType}): ${(node as any).fields.blockName || '-'}]</div>`
+              return `<div>[Block (${blockType}): ${(node as any).fields.blockName || '-'}]</div>`
             }
             return `<div>[Node: ${node.type}]</div>`
           },

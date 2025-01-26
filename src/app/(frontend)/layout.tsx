@@ -23,6 +23,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <InitTheme />
         <link href="/favicon.ico" rel="icon" sizes="32x32" />
         <link href="/favicon.svg" rel="icon" type="image/svg+xml" />
+        <link rel="me" href="https://s.1a23.studio/@eana" />
         <link rel="preconnect" href="https://rsms.me/" />
         <link rel="stylesheet" href="https://rsms.me/inter/inter.css" />
         <link
@@ -53,5 +54,18 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
     creator: '@blueset',
+  },
+  alternates: {
+    types: {
+      'application/rss+xml': [
+        {
+          url: '/feed.xml',
+          title: 'RSS Feed',
+        },
+      ],
+    },
+  },
+  other: {
+    'fediverse:creator': ['@eana@s.1a23.studio'],
   },
 }

@@ -12,6 +12,8 @@
         <style type="text/css">
           @import url('/xslstyles.css')
         </style>
+        <link rel="preconnect" href="https://rsms.me/" />
+        <link rel="stylesheet" href="https://rsms.me/inter/inter.css" />
       </head>
       <body>
         <div class="head inner">

@@ -1,15 +1,18 @@
-
 /* CSS for the XSL stylesheets
  */
 
- body {
-  font-family: sans-serif;
+body {
+  font-family: InterVariable, sans-serif;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   margin: 0;
   color: rgba(0,0,0,.86);
+  color: light-dark(rgba(0,0,0,.86), rgba(255,255,255,.86));
   font: 16px/1.42 sans-serif;
+  background-color: #fff;
+  background-color: light-dark(#fff, #1a1a1a);
+  color-scheme: dark light;
 }
 
 img {
@@ -29,13 +32,13 @@ img {
 }
 
 .top, .top a {
-  color:#9ea0a6
+  color: #9ea0a6;
+  color: light-dark(#9ea0a6, #7a7c82)
 }
 
 .head {
   padding: 80px 0 40px 0;
 }
-
 
 .head_logo img {
   height: 120px;
@@ -46,24 +49,32 @@ img {
   overflow: hidden;
 }
 
+.head_main a {
+  color: #333;
+  color: light-dark(#333, #ccc);
+}
+
 .head h1 {
   font-size: 36px;
   font-weight: 400;
   margin: 0;
-  color: #000
+  color: #000;
+  color: light-dark(#000, #fff)
 }
 
 .head p {
   margin: 0 0 10px;
   font-size: 18px;
   font-weight: 300;
-  color: #9ea0a6
+  color: #9ea0a6;
+  color: light-dark(#9ea0a6, #7a7c82)
 }
 
 .head .head_link {
   font-size: 14px;
   font-weight: 600;
   color: #333;
+  color: light-dark(#333, #ccc);
   text-decoration: none
 }
 
@@ -76,11 +87,13 @@ img {
   background-size: 24px 24px;
   background-repeat: no-repeat;
   font-weight: 600;
-  color: #333
+  color: #333;
+  color: light-dark(#333, #ccc)
 }
 
 .item {
   border-top: 1px solid rgba(0,0,0,.04);
+  border-top: 1px solid light-dark(rgba(0,0,0,.04), rgba(255,255,255,.04));
   padding: 20px;
   margin: 40px auto
 }
@@ -88,6 +101,7 @@ img {
 .item_meta {
   font-size: 14px;
   color: #9ea0a6;
+  color: light-dark(#9ea0a6, #7a7c82);
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
@@ -96,6 +110,7 @@ img {
 
 .item a {
   color: rgba(0,0,0,.98);
+  color: light-dark(rgba(0,0,0,.98), rgba(255,255,255,.98));
   text-decoration: none
 }
 
@@ -109,8 +124,10 @@ table {
 }
 th, td {
   border: 1px solid #ddd;
+  border: 1px solid light-dark(#ddd, #333);
   padding: 8px;
 }
 th {
   background-color: #f2f2f2;
+  background-color: light-dark(#f2f2f2, #2a2a2a);
 }
