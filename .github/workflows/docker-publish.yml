@@ -36,7 +36,7 @@ jobs:
 
       - name: Test connection to VPS
         run: |
-          curl -v http://[${{ secrets.VPS_HOST }}]
+          curl -v http://${{ secrets.VPS_HOST }}
 
       - name: Extract metadata for Docker
         id: meta
@@ -56,7 +56,7 @@ jobs:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USERNAME }}
           key: ${{ secrets.SSH_KEY }}
-          protocol: tcp6
+          protocol: tcp
           script: |
             # Get current timestamp for backup name
             TIMESTAMP=$(date +%Y%m%d_%H%M%S)
@@ -82,7 +82,7 @@ jobs:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USERNAME }}
           key: ${{ secrets.SSH_KEY }}
-          protocol: tcp6
+          protocol: tcp
           source: "/tmp/mongodb_backup_*.tar.gz"
           target: ./mongodb-backup/
 
@@ -92,7 +92,7 @@ jobs:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USERNAME }}
           key: ${{ secrets.SSH_KEY }}
-          protocol: tcp6
+          protocol: tcp
           script: |
             rm -rf /tmp/mongodb_backup_*
 
