@@ -71,6 +71,9 @@ jobs:
           echo "cd ${{ secrets.MONGO_PATH }} ++ docker compose exec mongo rm -rf /tmp/backup"
           ssh -i $HOME/.ssh/id_rsa ${{ secrets.VPS_USERNAME }}@${{ secrets.VPS_HOST }} "cd ${{ secrets.MONGO_PATH }} && docker compose exec mongo rm -rf /tmp/backup"
 
+          echo mkdir ./mongodb-backup/
+          mkdir ./mongodb-backup/
+
           echo "scp -i $HOME/.ssh/id_rsa ${{ secrets.VPS_USERNAME }}@${{ secrets.VPS_HOST }}:/tmp/mongodb_backup_*.tar.gz ./mongodb-backup/"
           scp -i $HOME/.ssh/id_rsa ${{ secrets.VPS_USERNAME }}@${{ secrets.VPS_HOST }}:/tmp/mongodb_backup_*.tar.gz ./mongodb-backup/
 
