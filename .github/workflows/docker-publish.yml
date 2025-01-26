@@ -80,16 +80,6 @@ jobs:
           echo "ssh -i $HOME/.ssh/id_rsa ${{ secrets.VPS_USERNAME }}@${{ secrets.VPS_HOST }} rm -rf /tmp/mongodb_backup_*"
           ssh -i $HOME/.ssh/id_rsa ${{ secrets.VPS_USERNAME }}@${{ secrets.VPS_HOST }} "rm -rf /tmp/mongodb_backup_*"
 
-      - name: Cleanup MongoDB backup
-        uses: appleboy/ssh-action@v1.2.0
-        with:
-          host: ${{ secrets.VPS_HOST }}
-          username: ${{ secrets.VPS_USERNAME }}
-          key: ${{ secrets.SSH_KEY }}
-          protocol: tcp
-          script: |
-            rm -rf /tmp/mongodb_backup_*
-
       - name: Write .env file
         run: |
           echo "PAYLOAD_SECRET=${{ vars.PAYLOAD_SECRET }}" >> .env
