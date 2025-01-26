@@ -38,7 +38,7 @@ export const home: RequiredDataFromCollectionSlug<'pages'> = {
                 format: 0,
                 mode: 'normal',
                 style: '',
-                text: 'Payload Website Template',
+                text: 'Payload Website Template b',
                 version: 1,
               },
             ],

@@ -1,6 +1,17 @@
 import type { FormFieldBlock } from '@payloadcms/plugin-form-builder/types'
+type ExtendedFormFieldBlock =
+  | FormFieldBlock
+  | {
+      blockName?: string
+      blockType: 'number'
+      defaultValue?: string
+      label?: string
+      name: string
+      required?: boolean
+      width?: number
+    }
 
-export const buildInitialFormState = (fields: FormFieldBlock[]) => {
+export const buildInitialFormState = (fields: ExtendedFormFieldBlock[]) => {
   return fields?.reduce((initialSchema, field) => {
     if (field.blockType === 'checkbox') {
       return {
@@ -38,6 +49,18 @@ export const buildInitialFormState = (fields: FormFieldBlock[]) => {
         [field.name]: '',
       }
     }
-    throw new Error('invalid blocktype')
+    if (field.blockType === 'number') {
+      return {
+        ...initialSchema,
+        [field.name]: '',
+      }
+    }
+    if (field.blockType === 'textarea') {
+      return {
+        ...initialSchema,
+        [field.name]: '',
+      }
+    }
+    throw new Error(`invalid blocktype: ${field.blockType}`)
   }, {})
 }

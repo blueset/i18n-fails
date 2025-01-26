@@ -5,6 +5,7 @@ import {
   FixedToolbarFeature,
   HeadingFeature,
   HorizontalRuleFeature,
+  InlineCodeFeature,
   InlineToolbarFeature,
   lexicalEditor,
 } from '@payloadcms/richtext-lexical'
@@ -26,6 +27,9 @@ import {
   PreviewField,
 } from '@payloadcms/plugin-seo/fields'
 import { slugField } from '@/fields/slug'
+import { InlineLangBlock } from '@/blocks/InlineLang/config'
+import { AbbrFeature } from '@/features/abbr/server'
+import { LangTagFeature } from '@/features/langTag/server'
 
 export const Posts: CollectionConfig<'posts'> = {
   slug: 'posts',
@@ -42,6 +46,9 @@ export const Posts: CollectionConfig<'posts'> = {
     title: true,
     slug: true,
     categories: true,
+    sourceLanguage: true,
+    destinationLanguages: true,
+    product: true,
     meta: {
       image: true,
       description: true,
@@ -85,17 +92,75 @@ export const Posts: CollectionConfig<'posts'> = {
               relationTo: 'media',
             },
             {
+              type: 'row',
+              fields: [
+                {
+                  name: 'sourceLanguage',
+                  type: 'relationship',
+                  hasMany: false,
+                  relationTo: 'languages',
+                  admin: {
+                    width: '50%',
+                  },
+                },
+                {
+                  name: 'destinationLanguages',
+                  type: 'relationship',
+                  hasMany: true,
+                  relationTo: 'languages',
+                  admin: {
+                    width: '50%',
+                  },
+                },
+              ],
+            },
+            {
+              type: 'row',
+              fields: [
+                {
+                  name: 'sourceImages',
+                  type: 'upload',
+                  relationTo: 'media',
+                  hasMany: true,
+                  displayPreview: true,
+                  admin: {
+                    width: '50%',
+                  },
+                },
+                {
+                  name: 'destinationImages',
+                  type: 'upload',
+                  relationTo: 'media',
+                  hasMany: true,
+                  displayPreview: true,
+                  admin: {
+                    width: '50%',
+                  },
+                },
+              ],
+            },
+          ],
+          label: 'Content',
+        },
+        {
+          fields: [
+            {
               name: 'content',
               type: 'richText',
               editor: lexicalEditor({
-                features: ({ rootFeatures }) => {
+                features: ({ defaultFeatures }) => {
                   return [
-                    ...rootFeatures,
+                    ...defaultFeatures,
                     HeadingFeature({ enabledHeadingSizes: ['h1', 'h2', 'h3', 'h4'] }),
-                    BlocksFeature({ blocks: [Banner, Code, MediaBlock] }),
+                    BlocksFeature({
+                      blocks: [Banner, Code, MediaBlock],
+                      inlineBlocks: [InlineLangBlock],
+                    }),
                     FixedToolbarFeature(),
                     InlineToolbarFeature(),
                     HorizontalRuleFeature(),
+                    AbbrFeature(),
+                    LangTagFeature(),
                   ]
                 },
               }),
@@ -103,7 +168,7 @@ export const Posts: CollectionConfig<'posts'> = {
               required: true,
             },
           ],
-          label: 'Content',
+          label: 'Description',
         },
         {
           fields: [
@@ -124,13 +189,41 @@ export const Posts: CollectionConfig<'posts'> = {
               relationTo: 'posts',
             },
             {
-              name: 'categories',
-              type: 'relationship',
-              admin: {
-                position: 'sidebar',
+              name: 'relevantLinks',
+              type: 'array',
+              label: 'Relevant Links',
+              labels: {
+                singular: 'Relevant Link',
+                plural: 'Relevant Links',
               },
-              hasMany: true,
-              relationTo: 'categories',
+              admin: {
+                components: {
+                  RowLabel: '@/collections/Posts/AdminComponents#RelevantLinkRowLabel',
+                },
+              },
+              fields: [
+                {
+                  type: 'row',
+                  fields: [
+                    {
+                      name: 'title',
+                      type: 'text',
+                      required: true,
+                      admin: {
+                        width: '50%',
+                      },
+                    },
+                    {
+                      name: 'url',
+                      type: 'text',
+                      required: true,
+                      admin: {
+                        width: '50%',
+                      },
+                    },
+                  ],
+                },
+              ],
             },
           ],
           label: 'Meta',
@@ -216,6 +309,26 @@ export const Posts: CollectionConfig<'posts'> = {
           type: 'text',
         },
       ],
+    },
+    {
+      name: 'product',
+      type: 'relationship',
+      relationTo: 'products',
+      admin: {
+        position: 'sidebar',
+        // components: {
+        //   Field: '@/collections/Posts/AdminComponents#DebugComp',
+        // },
+      },
+    },
+    {
+      name: 'categories',
+      type: 'relationship',
+      admin: {
+        position: 'sidebar',
+      },
+      hasMany: true,
+      relationTo: 'categories',
     },
     ...slugField(),
   ],

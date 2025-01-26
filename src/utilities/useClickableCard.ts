@@ -60,9 +60,13 @@ function useClickableCard<T extends HTMLElement>({
         const difference = timeNow - timeDown.current
 
         if (link.current?.href && difference <= 250) {
-          if (!hasActiveParent.current && pressedButton.current === 0 && !e.ctrlKey) {
-            if (external) {
-              const target = newTab ? '_blank' : '_self'
+          if (
+            !hasActiveParent.current &&
+            (pressedButton.current === 0 || pressedButton.current === 1) &&
+            !e.ctrlKey
+          ) {
+            if (external || pressedButton.current === 1) {
+              const target = newTab || pressedButton.current == 1 ? '_blank' : '_self'
               window.open(link.current.href, target)
             } else {
               router.push(link.current.href, { scroll })

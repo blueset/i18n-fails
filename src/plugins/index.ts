@@ -13,9 +13,10 @@ import { beforeSyncWithSearch } from '@/search/beforeSync'
 
 import { Page, Post } from '@/payload-types'
 import { getServerSideURL } from '@/utilities/getURL'
+import { siteTitle } from '@/utilities/constants'
 
 const generateTitle: GenerateTitle<Post | Page> = ({ doc }) => {
-  return doc?.title ? `${doc.title} | Payload Website Template` : 'Payload Website Template'
+  return doc?.title || siteTitle
 }
 
 const generateURL: GenerateURL<Post | Page> = ({ doc }) => {
@@ -48,8 +49,9 @@ export const plugins: Plugin[] = [
     },
   }),
   nestedDocsPlugin({
-    collections: ['categories'],
+    collections: ['categories', 'products'],
     generateURL: (docs) => docs.reduce((url, doc) => `${url}/${doc.slug}`, ''),
+    generateLabel: (docs, currentDoc) => `${currentDoc.title}`,
   }),
   seoPlugin({
     generateTitle,

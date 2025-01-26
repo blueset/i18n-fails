@@ -33,7 +33,7 @@ export const MediaBlock: React.FC<Props> = (props) => {
   if (media && typeof media === 'object') caption = media.caption
 
   return (
-    <div
+    <figure
       className={cn(
         '',
         {
@@ -44,13 +44,14 @@ export const MediaBlock: React.FC<Props> = (props) => {
     >
       {(media || staticImage) && (
         <Media
-          imgClassName={cn('border border-border rounded-[0.8rem]', imgClassName)}
+          imgClassName={cn('border border-border rounded-[0.8rem] cursor-pointer', imgClassName)}
           resource={media}
           src={staticImage}
+          useLightbox
         />
       )}
       {caption && (
-        <div
+        <figcaption
           className={cn(
             'mt-6',
             {
@@ -60,8 +61,8 @@ export const MediaBlock: React.FC<Props> = (props) => {
           )}
         >
           <RichText data={caption} enableGutter={false} />
-        </div>
+        </figcaption>
       )}
-    </div>
+    </figure>
   )
 }

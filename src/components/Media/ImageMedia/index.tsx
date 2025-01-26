@@ -10,6 +10,8 @@ import type { Props as MediaProps } from '../types'
 
 import { cssVariables } from '@/cssVariables'
 import { getClientSideURL } from '@/utilities/getURL'
+import { useRegisterMedia } from '@/components/Lightbox/LightboxProvider'
+import { Media } from '@/payload-types'
 
 const { breakpoints } = cssVariables
 
@@ -27,6 +29,9 @@ export const ImageMedia: React.FC<MediaProps> = (props) => {
     size: sizeFromProps,
     src: srcFromProps,
     loading: loadingFromProps,
+    useLightbox,
+    className,
+    blurDataURL = placeholderBlur,
   } = props
 
   let width: number | undefined
@@ -61,21 +66,25 @@ export const ImageMedia: React.FC<MediaProps> = (props) => {
         .map(([, value]) => `(max-width: ${value}px) ${value * 2}w`)
         .join(', ')
 
+  const handleOnClick = useRegisterMedia(useLightbox ? (resource as Media) : undefined)
+
   return (
-    <picture>
+    <picture className={cn(className)}>
       <NextImage
         alt={alt || ''}
+        title={alt || ''}
         className={cn(imgClassName)}
         fill={fill}
         height={!fill ? height : undefined}
         placeholder="blur"
-        blurDataURL={placeholderBlur}
+        blurDataURL={blurDataURL}
         priority={priority}
         quality={100}
         loading={loading}
         sizes={sizes}
         src={src}
         width={!fill ? width : undefined}
+        onClick={handleOnClick}
       />
     </picture>
   )

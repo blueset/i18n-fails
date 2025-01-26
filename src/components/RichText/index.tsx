@@ -2,6 +2,7 @@ import { MediaBlock } from '@/blocks/MediaBlock/Component'
 import {
   DefaultNodeTypes,
   SerializedBlockNode,
+  SerializedInlineBlockNode,
   SerializedLinkNode,
 } from '@payloadcms/richtext-lexical'
 import { SerializedEditorState } from '@payloadcms/richtext-lexical/lexical'
@@ -17,14 +18,19 @@ import type {
   BannerBlock as BannerBlockProps,
   CallToActionBlock as CTABlockProps,
   MediaBlock as MediaBlockProps,
+  // InlineLanguageBlock as InlineLanguageBlockProps,
 } from '@/payload-types'
 import { BannerBlock } from '@/blocks/Banner/Component'
 import { CallToActionBlock } from '@/blocks/CallToAction/Component'
+// import { InlineLangBlock } from '@/blocks/InlineLang/Component'
 import { cn } from '@/utilities/ui'
+import { LangTagConverter } from '@/features/langTag/converter'
+import { AbbrConverter } from '@/features/abbr/converter'
 
 type NodeTypes =
   | DefaultNodeTypes
   | SerializedBlockNode<CTABlockProps | MediaBlockProps | BannerBlockProps | CodeBlockProps>
+// | SerializedInlineBlockNode<InlineLanguageBlockProps>
 
 const internalDocToHref = ({ linkNode }: { linkNode: SerializedLinkNode }) => {
   const { value, relationTo } = linkNode.fields.doc!
@@ -38,6 +44,8 @@ const internalDocToHref = ({ linkNode }: { linkNode: SerializedLinkNode }) => {
 const jsxConverters: JSXConvertersFunction<NodeTypes> = ({ defaultConverters }) => ({
   ...defaultConverters,
   ...LinkJSXConverter({ internalDocToHref }),
+  abbr: AbbrConverter,
+  langTag: LangTagConverter,
   blocks: {
     banner: ({ node }) => <BannerBlock className="col-start-2 mb-4" {...node.fields} />,
     mediaBlock: ({ node }) => (
@@ -53,6 +61,9 @@ const jsxConverters: JSXConvertersFunction<NodeTypes> = ({ defaultConverters }) 
     code: ({ node }) => <CodeBlock className="col-start-2" {...node.fields} />,
     cta: ({ node }) => <CallToActionBlock {...node.fields} />,
   },
+  // inlineBlocks: {
+  //   inlineLang: ({ node }) => <InlineLangBlock {...node.fields} />,
+  // },
 })
 
 type Props = {

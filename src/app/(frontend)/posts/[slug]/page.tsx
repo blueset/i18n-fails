@@ -14,6 +14,8 @@ import { PostHero } from '@/heros/PostHero'
 import { generateMeta } from '@/utilities/generateMeta'
 import PageClient from './page.client'
 import { LivePreviewListener } from '@/components/LivePreviewListener'
+import { HeroGallery } from './HeroGallery'
+import { MediaProvider } from '@/components/Lightbox/LightboxProvider'
 
 export async function generateStaticParams() {
   const payload = await getPayload({ config: configPromise })
@@ -50,28 +52,51 @@ export default async function Post({ params: paramsPromise }: Args) {
   if (!post) return <PayloadRedirects url={url} />
 
   return (
-    <article className="pt-16 pb-16">
-      <PageClient />
+    <MediaProvider>
+      <article className="pt-16 pb-16">
+        {/* <PageClient /> */}
 
-      {/* Allows redirects for valid pages too */}
-      <PayloadRedirects disableNotFound url={url} />
+        {/* Allows redirects for valid pages too */}
+        <PayloadRedirects disableNotFound url={url} />
 
-      {draft && <LivePreviewListener />}
+        {draft && <LivePreviewListener />}
 
-      <PostHero post={post} />
+        <PostHero post={post} />
+        <HeroGallery post={post} />
 
-      <div className="flex flex-col items-center gap-4 pt-8">
-        <div className="container">
-          <RichText className="max-w-[48rem] mx-auto" data={post.content} enableGutter={false} />
-          {post.relatedPosts && post.relatedPosts.length > 0 && (
+        <div className="flex flex-col items-center gap-4">
+          <div className="container lg:grid lg:grid-cols-[1fr_48rem_1fr] ">
+            <RichText
+              className="col-start-1 col-span-1 md:col-start-2 md:col-span-1"
+              data={post.content}
+              enableGutter={false}
+            />
+            {/* {post.relatedPosts && post.relatedPosts.length > 0 && (
             <RelatedPosts
               className="mt-12 max-w-[52rem] lg:grid lg:grid-cols-subgrid col-start-1 col-span-3 grid-rows-[2fr]"
               docs={post.relatedPosts.filter((post) => typeof post === 'object')}
             />
-          )}
+          )} */}
+            {post.relevantLinks && post.relevantLinks.length > 0 && (
+              <div className="prose md:prose-md dark:prose-invert col-start-1 col-span-1 md:col-start-2 md:col-span-1 mt-12 max-w-none">
+                <h2>External links</h2>
+                <ul>
+                  {post.relevantLinks.map((link) => {
+                    return (
+                      <li key={link.id}>
+                        <a href={link.url} target="_blank" rel="noopener noreferrer">
+                          {link.title}
+                        </a>
+                      </li>
+                    )
+                  })}
+                </ul>
+              </div>
+            )}
+          </div>
         </div>
-      </div>
-    </article>
+      </article>
+    </MediaProvider>
   )
 }
 

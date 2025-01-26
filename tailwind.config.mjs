@@ -1,5 +1,8 @@
+import Animate from 'tailwindcss-animate'
+import Typography from '@tailwindcss/typography'
+
 /** @type {import('tailwindcss').Config} */
-export default {
+const config = {
   content: [
     './pages/**/*.{ts,tsx}',
     './components/**/*.{ts,tsx}',
@@ -7,7 +10,7 @@ export default {
     './src/**/*.{ts,tsx}',
   ],
   darkMode: ['selector', '[data-theme="dark"]'],
-  plugins: [require('tailwindcss-animate'), require('@tailwindcss/typography')],
+  plugins: [Animate, Typography],
   prefix: '',
   safelist: [
     'lg:col-span-4',
@@ -48,6 +51,7 @@ export default {
         'accordion-up': 'accordion-up 0.2s ease-out',
       },
       borderRadius: {
+        xl: 'calc(var(--radius) + 2px)',
         lg: 'var(--radius)',
         md: 'calc(var(--radius) - 2px)',
         sm: 'calc(var(--radius) - 4px)',
@@ -91,8 +95,8 @@ export default {
         warning: 'hsl(var(--warning))',
       },
       fontFamily: {
-        mono: ['var(--font-geist-mono)'],
-        sans: ['var(--font-geist-sans)'],
+        mono: ['monospace'],
+        sans: ['InterVariable'],
       },
       keyframes: {
         'accordion-down': {
@@ -113,6 +117,10 @@ export default {
               h1: {
                 fontWeight: 'normal',
                 marginBottom: '0.25em',
+                textWrap: 'balance',
+              },
+              h2: {
+                textWrap: 'balance',
               },
             },
           ],
@@ -142,7 +150,17 @@ export default {
             },
           ],
         },
+        invert: {
+          css: [
+            {
+              p: {
+                fontWeight: 350,
+              },
+            },
+          ],
+        },
       }),
     },
   },
 }
+export default config

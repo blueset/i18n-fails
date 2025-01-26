@@ -1,5 +1,5 @@
 // storage-adapter-import-placeholder
-import { sqliteAdapter } from '@payloadcms/db-sqlite'
+import { mongooseAdapter } from '@payloadcms/db-mongodb'
 
 import sharp from 'sharp' // sharp-import
 import path from 'path'
@@ -16,6 +16,8 @@ import { Header } from './Header/config'
 import { plugins } from './plugins'
 import { defaultLexical } from '@/fields/defaultLexical'
 import { getServerSideURL } from './utilities/getURL'
+import { Products } from './collections/Products'
+import { Languages } from './collections/Languages'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -56,15 +58,28 @@ export default buildConfig({
         },
       ],
     },
+    autoLogin:
+      process.env.NEXT_PUBLIC_ENABLE_AUTOLOGIN === 'true'
+        ? {
+            email: process.env.NEXT_PUBLIC_ENABLE_AUTOLOGIN_EMAIL || '',
+            username: process.env.NEXT_PUBLIC_ENABLE_AUTOLOGIN_USERNAME || '',
+            password: process.env.NEXT_PUBLIC_ENABLE_AUTOLOGIN_PASSWORD || '',
+            prefillOnly: true,
+          }
+        : false,
   },
   // This config helps us configure global or default features that the other editors can inherit
   editor: defaultLexical,
-  db: sqliteAdapter({
-    client: {
-      url: process.env.DATABASE_URI || '',
-    },
+  db: mongooseAdapter({
+    url: process.env.DATABASE_URI || '',
   }),
-  collections: [Pages, Posts, Media, Categories, Users],
+  // db: sqliteAdapter({
+  //   client: {
+  //     url: process.env.DATABASE_URI || '',
+  //   },
+  // }),
+  debug: true,
+  collections: [Pages, Posts, Media, Categories, Users, Products, Languages],
   cors: [getServerSideURL()].filter(Boolean),
   globals: [Header, Footer],
   plugins: [

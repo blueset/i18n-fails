@@ -26,7 +26,6 @@ export const Media: CollectionConfig = {
     {
       name: 'alt',
       type: 'text',
-      //required: true,
     },
     {
       name: 'caption',
@@ -43,6 +42,9 @@ export const Media: CollectionConfig = {
     staticDir: path.resolve(dirname, '../../public/media'),
     adminThumbnail: 'thumbnail',
     focalPoint: true,
+    // formatOptions: {
+    //   format: 'avif',
+    // },
     imageSizes: [
       {
         name: 'thumbnail',

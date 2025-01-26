@@ -16,6 +16,8 @@ export interface Config {
     media: Media;
     categories: Category;
     users: User;
+    products: Product;
+    languages: Language;
     redirects: Redirect;
     forms: Form;
     'form-submissions': FormSubmission;
@@ -25,13 +27,23 @@ export interface Config {
     'payload-preferences': PayloadPreference;
     'payload-migrations': PayloadMigration;
   };
-  collectionsJoins: {};
+  collectionsJoins: {
+    products: {
+      childProducts: 'products';
+    };
+    languages: {
+      sourceLanguageOf: 'posts';
+      destinationLanguageOf: 'posts';
+    };
+  };
   collectionsSelect: {
     pages: PagesSelect<false> | PagesSelect<true>;
     posts: PostsSelect<false> | PostsSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
     categories: CategoriesSelect<false> | CategoriesSelect<true>;
     users: UsersSelect<false> | UsersSelect<true>;
+    products: ProductsSelect<false> | ProductsSelect<true>;
+    languages: LanguagesSelect<false> | LanguagesSelect<true>;
     redirects: RedirectsSelect<false> | RedirectsSelect<true>;
     forms: FormsSelect<false> | FormsSelect<true>;
     'form-submissions': FormSubmissionsSelect<false> | FormSubmissionsSelect<true>;
@@ -68,22 +80,34 @@ export interface Config {
   };
 }
 export interface UserAuthOperations {
-  forgotPassword: {
-    email: string;
-    password: string;
-  };
-  login: {
-    email: string;
-    password: string;
-  };
+  forgotPassword:
+    | {
+        email: string;
+      }
+    | {
+        username: string;
+      };
+  login:
+    | {
+        email: string;
+        password: string;
+      }
+    | {
+        password: string;
+        username: string;
+      };
   registerFirstUser: {
-    email: string;
     password: string;
+    username?: string;
+    email?: string;
   };
-  unlock: {
-    email: string;
-    password: string;
-  };
+  unlock:
+    | {
+        email: string;
+      }
+    | {
+        username: string;
+      };
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -135,7 +159,7 @@ export interface Page {
       | null;
     media?: (string | null) | Media;
   };
-  layout: (CallToActionBlock | ContentBlock | MediaBlock | ArchiveBlock | FormBlock)[];
+  layout: (CallToActionBlock | ContentBlock | MediaBlock | ArchiveBlock | FormBlock | TaxonomyBlock)[];
   meta?: {
     title?: string | null;
     /**
@@ -159,6 +183,10 @@ export interface Post {
   id: string;
   title: string;
   heroImage?: (string | null) | Media;
+  sourceLanguage?: (string | null) | Language;
+  destinationLanguages?: (string | Language)[] | null;
+  sourceImages?: (string | Media)[] | null;
+  destinationImages?: (string | Media)[] | null;
   content: {
     root: {
       type: string;
@@ -175,7 +203,13 @@ export interface Post {
     [k: string]: unknown;
   };
   relatedPosts?: (string | Post)[] | null;
-  categories?: (string | Category)[] | null;
+  relevantLinks?:
+    | {
+        title: string;
+        url: string;
+        id?: string | null;
+      }[]
+    | null;
   meta?: {
     title?: string | null;
     /**
@@ -192,6 +226,8 @@ export interface Post {
         name?: string | null;
       }[]
     | null;
+  product?: (string | null) | Product;
+  categories?: (string | Category)[] | null;
   slug?: string | null;
   slugLock?: boolean | null;
   updatedAt: string;
@@ -292,6 +328,74 @@ export interface Media {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "languages".
+ */
+export interface Language {
+  id: string;
+  name: string;
+  nativeName: string;
+  code: string;
+  slug?: string | null;
+  slugLock?: boolean | null;
+  sourceLanguageOf?: {
+    docs?: (string | Post)[] | null;
+    hasNextPage?: boolean | null;
+  } | null;
+  destinationLanguageOf?: {
+    docs?: (string | Post)[] | null;
+    hasNextPage?: boolean | null;
+  } | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "users".
+ */
+export interface User {
+  id: string;
+  name?: string | null;
+  updatedAt: string;
+  createdAt: string;
+  email?: string | null;
+  username?: string | null;
+  resetPasswordToken?: string | null;
+  resetPasswordExpiration?: string | null;
+  salt?: string | null;
+  hash?: string | null;
+  loginAttempts?: number | null;
+  lockUntil?: string | null;
+  password?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "products".
+ */
+export interface Product {
+  id: string;
+  title: string;
+  logo?: (string | null) | Media;
+  breadcrumbs?:
+    | {
+        doc?: (string | null) | Product;
+        url?: string | null;
+        label?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  slug?: string | null;
+  slugLock?: boolean | null;
+  path?: string | null;
+  childProducts?: {
+    docs?: (string | Product)[] | null;
+    hasNextPage?: boolean | null;
+  } | null;
+  parent?: (string | null) | Product;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "categories".
  */
 export interface Category {
@@ -310,24 +414,6 @@ export interface Category {
     | null;
   updatedAt: string;
   createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "users".
- */
-export interface User {
-  id: string;
-  name?: string | null;
-  updatedAt: string;
-  createdAt: string;
-  email: string;
-  resetPasswordToken?: string | null;
-  resetPasswordExpiration?: string | null;
-  salt?: string | null;
-  hash?: string | null;
-  loginAttempts?: number | null;
-  lockUntil?: string | null;
-  password?: string | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -467,6 +553,26 @@ export interface ArchiveBlock {
         value: string | Post;
       }[]
     | null;
+  enableLink?: boolean | null;
+  link?: {
+    type?: ('reference' | 'custom') | null;
+    newTab?: boolean | null;
+    reference?:
+      | ({
+          relationTo: 'pages';
+          value: string | Page;
+        } | null)
+      | ({
+          relationTo: 'posts';
+          value: string | Post;
+        } | null);
+    url?: string | null;
+    label: string;
+    /**
+     * Choose how the link should be rendered.
+     */
+    appearance?: ('default' | 'outline') | null;
+  };
   id?: string | null;
   blockName?: string | null;
   blockType: 'archive';
@@ -672,6 +778,33 @@ export interface Form {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TaxonomyBlock".
+ */
+export interface TaxonomyBlock {
+  introContent?: {
+    root: {
+      type: string;
+      children: {
+        type: string;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  taxonomiesToShow?:
+    | ('vendors' | 'products' | 'languages' | 'sourceLanguages' | 'targetLanguages' | 'categories')[]
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'taxonomy';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "redirects".
  */
 export interface Redirect {
@@ -863,6 +996,14 @@ export interface PayloadLockedDocument {
         value: string | User;
       } | null)
     | ({
+        relationTo: 'products';
+        value: string | Product;
+      } | null)
+    | ({
+        relationTo: 'languages';
+        value: string | Language;
+      } | null)
+    | ({
         relationTo: 'redirects';
         value: string | Redirect;
       } | null)
@@ -960,6 +1101,7 @@ export interface PagesSelect<T extends boolean = true> {
         mediaBlock?: T | MediaBlockSelect<T>;
         archive?: T | ArchiveBlockSelect<T>;
         formBlock?: T | FormBlockSelect<T>;
+        taxonomy?: T | TaxonomyBlockSelect<T>;
       };
   meta?:
     | T
@@ -1045,6 +1187,17 @@ export interface ArchiveBlockSelect<T extends boolean = true> {
   categories?: T;
   limit?: T;
   selectedDocs?: T;
+  enableLink?: T;
+  link?:
+    | T
+    | {
+        type?: T;
+        newTab?: T;
+        reference?: T;
+        url?: T;
+        label?: T;
+        appearance?: T;
+      };
   id?: T;
   blockName?: T;
 }
@@ -1061,14 +1214,34 @@ export interface FormBlockSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TaxonomyBlock_select".
+ */
+export interface TaxonomyBlockSelect<T extends boolean = true> {
+  introContent?: T;
+  taxonomiesToShow?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "posts_select".
  */
 export interface PostsSelect<T extends boolean = true> {
   title?: T;
   heroImage?: T;
+  sourceLanguage?: T;
+  destinationLanguages?: T;
+  sourceImages?: T;
+  destinationImages?: T;
   content?: T;
   relatedPosts?: T;
-  categories?: T;
+  relevantLinks?:
+    | T
+    | {
+        title?: T;
+        url?: T;
+        id?: T;
+      };
   meta?:
     | T
     | {
@@ -1084,6 +1257,8 @@ export interface PostsSelect<T extends boolean = true> {
         id?: T;
         name?: T;
       };
+  product?: T;
+  categories?: T;
   slug?: T;
   slugLock?: T;
   updatedAt?: T;
@@ -1212,12 +1387,51 @@ export interface UsersSelect<T extends boolean = true> {
   updatedAt?: T;
   createdAt?: T;
   email?: T;
+  username?: T;
   resetPasswordToken?: T;
   resetPasswordExpiration?: T;
   salt?: T;
   hash?: T;
   loginAttempts?: T;
   lockUntil?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "products_select".
+ */
+export interface ProductsSelect<T extends boolean = true> {
+  title?: T;
+  logo?: T;
+  breadcrumbs?:
+    | T
+    | {
+        doc?: T;
+        url?: T;
+        label?: T;
+        id?: T;
+      };
+  slug?: T;
+  slugLock?: T;
+  path?: T;
+  childProducts?: T;
+  parent?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "languages_select".
+ */
+export interface LanguagesSelect<T extends boolean = true> {
+  name?: T;
+  nativeName?: T;
+  code?: T;
+  slug?: T;
+  slugLock?: T;
+  sourceLanguageOf?: T;
+  destinationLanguageOf?: T;
+  updatedAt?: T;
+  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1633,6 +1847,31 @@ export interface CodeBlock {
   id?: string | null;
   blockName?: string | null;
   blockType: 'code';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "InlineLanguageBlock".
+ */
+export interface InlineLanguageBlock {
+  language: string;
+  richText?: {
+    root: {
+      type: string;
+      children: {
+        type: string;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'inlineLang';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

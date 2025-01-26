@@ -10,15 +10,19 @@ export const populateAuthors: CollectionAfterReadHook = async ({ doc, req, req: 
     const authorDocs: User[] = []
 
     for (const author of doc.authors) {
-      const authorDoc = await payload.findByID({
-        id: typeof author === 'object' ? author?.id : author,
-        collection: 'users',
-        depth: 0,
-        req,
-      })
+      try {
+        const authorDoc = await payload.findByID({
+          id: typeof author === 'object' ? author?.id : author,
+          collection: 'users',
+          depth: 0,
+          req,
+        })
 
-      if (authorDoc) {
-        authorDocs.push(authorDoc)
+        if (authorDoc) {
+          authorDocs.push(authorDoc)
+        }
+      } catch (error) {
+        console.error('Error populating author', error)
       }
     }
 
