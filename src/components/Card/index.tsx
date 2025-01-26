@@ -59,9 +59,12 @@ export const Card: React.FC<{
                 {categories
                   ?.filter((c) => typeof c === 'object')
                   ?.map(({ title, slug }, index) => (
-                    <Button size="xs-clear" variant="link" asChild key={index}>
-                      <Link href={`/categories/${slug}`}>{title}</Link>
-                    </Button>
+                    <Fragment key={index}>
+                      {index !== 0 && ', '}
+                      <Button size="xs-clear" variant="link" asChild>
+                        <Link href={`/categories/${slug}`}>{title}</Link>
+                      </Button>
+                    </Fragment>
                   ))}
                 {typeof product === 'object' &&
                   product?.breadcrumbs?.map(({ label, url }, index) => (
