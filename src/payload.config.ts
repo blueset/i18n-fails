@@ -18,6 +18,14 @@ import { defaultLexical } from '@/fields/defaultLexical'
 import { getServerSideURL } from './utilities/getURL'
 import { Products } from './collections/Products'
 import { Languages } from './collections/Languages'
+import { MongoMemoryReplSet } from 'mongodb-memory-server'
+
+let memoryDbUri: string | undefined
+let memoryDb: MongoMemoryReplSet | undefined
+if (!process.env.DATABASE_URI) {
+  memoryDb = await MongoMemoryReplSet.create()
+  memoryDbUri = memoryDb.getUri()
+}
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -71,7 +79,8 @@ export default buildConfig({
   // This config helps us configure global or default features that the other editors can inherit
   editor: defaultLexical,
   db: mongooseAdapter({
-    url: process.env.DATABASE_URI || '',
+    url: process.env.DATABASE_URI || memoryDbUri || '',
+    mongoMemoryServer: process.env.DATABASE_URI ? undefined : memoryDb,
   }),
   // db: sqliteAdapter({
   //   client: {
