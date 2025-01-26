@@ -123,6 +123,7 @@ export function MediaProvider({ children }: { children: React.ReactNode }) {
       <Lightbox
         open={index >= 0}
         close={() => setIndex(-1)}
+        index={index}
         slides={slides}
         plugins={[Captions, Zoom]}
         captions={{ descriptionTextAlign: 'center' }}
