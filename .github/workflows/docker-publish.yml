@@ -60,22 +60,22 @@ jobs:
           TIMESTAMP=$(date +%Y%m%d_%H%M%S)
 
           echo "cd ${{ secrets.MONGO_PATH }} ++ docker compose exec mongo mongodump --out=/tmp/backup"
-          ssh -i $HOME/.ssh/id_rsa ${{ secrets.VPS_USERNAME }}@${{ secrets.VPS_HOST }} cd ${{ secrets.MONGO_PATH }} && docker compose exec mongo mongodump --out=/tmp/backup
+          ssh -i $HOME/.ssh/id_rsa ${{ secrets.VPS_USERNAME }}@${{ secrets.VPS_HOST }} "cd ${{ secrets.MONGO_PATH }} && docker compose exec mongo mongodump --out=/tmp/backup"
 
           echo "cd ${{ secrets.MONGO_PATH }} ++ docker compose cp mongo:/tmp/backup /tmp/mongodb_backup_${TIMESTAMP}"
-          ssh -i $HOME/.ssh/id_rsa ${{ secrets.VPS_USERNAME }}@${{ secrets.VPS_HOST }} cd ${{ secrets.MONGO_PATH }} && docker compose cp mongo:/tmp/backup /tmp/mongodb_backup_${TIMESTAMP}
+          ssh -i $HOME/.ssh/id_rsa ${{ secrets.VPS_USERNAME }}@${{ secrets.VPS_HOST }} "cd ${{ secrets.MONGO_PATH }} && docker compose cp mongo:/tmp/backup /tmp/mongodb_backup_$"{TIMESTAMP}
 
           echo "cd /tmp ++ tar -czf mongodb_backup_${TIMESTAMP}.tar.gz mongodb_backup_${TIMESTAMP}"
-          ssh -i $HOME/.ssh/id_rsa ${{ secrets.VPS_USERNAME }}@${{ secrets.VPS_HOST }} cd /tmp && tar -czf mongodb_backup_${TIMESTAMP}.tar.gz mongodb_backup_${TIMESTAMP}
+          ssh -i $HOME/.ssh/id_rsa ${{ secrets.VPS_USERNAME }}@${{ secrets.VPS_HOST }} "cd /tmp && tar -czf mongodb_backup_${TIMESTAMP}.tar.gz mongodb_backup_${TIMESTAMP}"
 
           echo "cd ${{ secrets.MONGO_PATH }} ++ docker compose exec mongo rm -rf /tmp/backup"
-          ssh -i $HOME/.ssh/id_rsa ${{ secrets.VPS_USERNAME }}@${{ secrets.VPS_HOST }} cd ${{ secrets.MONGO_PATH }} && docker compose exec mongo rm -rf /tmp/backup
+          ssh -i $HOME/.ssh/id_rsa ${{ secrets.VPS_USERNAME }}@${{ secrets.VPS_HOST }} "cd ${{ secrets.MONGO_PATH }} && docker compose exec mongo rm -rf /tmp/backup"
 
           echo "scp -i $HOME/.ssh/id_rsa ${{ secrets.VPS_USERNAME }}@${{ secrets.VPS_HOST }}:/tmp/mongodb_backup_*.tar.gz ./mongodb-backup/"
           scp -i $HOME/.ssh/id_rsa ${{ secrets.VPS_USERNAME }}@${{ secrets.VPS_HOST }}:/tmp/mongodb_backup_*.tar.gz ./mongodb-backup/
 
           echo "ssh -i $HOME/.ssh/id_rsa ${{ secrets.VPS_USERNAME }}@${{ secrets.VPS_HOST }} rm -rf /tmp/mongodb_backup_*"
-          ssh -i $HOME/.ssh/id_rsa ${{ secrets.VPS_USERNAME }}@${{ secrets.VPS_HOST }} rm -rf /tmp/mongodb_backup_*
+          ssh -i $HOME/.ssh/id_rsa ${{ secrets.VPS_USERNAME }}@${{ secrets.VPS_HOST }} "rm -rf /tmp/mongodb_backup_*"
 
       - name: Cleanup MongoDB backup
         uses: appleboy/ssh-action@v1.2.0
