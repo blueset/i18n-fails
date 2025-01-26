@@ -187,7 +187,7 @@ export interface Post {
   destinationLanguages?: (string | Language)[] | null;
   sourceImages?: (string | Media)[] | null;
   destinationImages?: (string | Media)[] | null;
-  content: {
+  content?: {
     root: {
       type: string;
       children: {
@@ -201,7 +201,7 @@ export interface Post {
       version: number;
     };
     [k: string]: unknown;
-  };
+  } | null;
   relatedPosts?: (string | Post)[] | null;
   relevantLinks?:
     | {

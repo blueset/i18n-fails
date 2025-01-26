@@ -46,10 +46,55 @@ jobs:
             type=semver,pattern={{major}}.{{minor}}
             type=sha,format=long
 
+      - name: Execute MongoDB dump
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USERNAME }}
+          key: ${{ secrets.SSH_KEY }}
+          script: |
+            # Get current timestamp for backup name
+            TIMESTAMP=$(date +%Y%m%d_%H%M%S)
+            
+            cd ${{ secrets.MONGO_PATH }}
+
+            # Create dump in the container
+            docker compose exec mongo mongodump --out=/tmp/backup
+            
+            # Copy dump from container to host
+            docker compose cp mongo:/tmp/backup /tmp/mongodb_backup_${TIMESTAMP}
+            
+            # Create tar archive
+            cd /tmp
+            tar -czf mongodb_backup_${TIMESTAMP}.tar.gz mongodb_backup_${TIMESTAMP}
+            
+            # Clean up container's temporary files
+            docker compose exec mongo rm -rf /tmp/backup
+
+      - name: copy file via ssh password
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USERNAME }}
+          password: ${{ secrets.PASSWORD }}
+          source: "/tmp/mongodb_backup_*.tar.gz"
+          target: ./mongodb-backup/
+
+      - name: Cleanup MongoDB backup
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USERNAME }}
+          key: ${{ secrets.SSH_KEY }}
+          script: |
+            rm -rf /tmp/mongodb_backup_*
+
       - name: Write .env file
         run: |
           echo "PAYLOAD_SECRET=${{ vars.PAYLOAD_SECRET }}" >> .env
           echo "CRON_SECRET=${{ vars.CRON_SECRET }}" >> .env
+          echo "VERCEL_PROJECT_PRODUCTION_URL=i18nfails.1a23.studio" >> .env
+          echo "NEXT_PUBLIC_SERVER_URL=https://i18nfails.1a23.studio" >> .env
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
@@ -60,3 +105,8 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
+      - name: Cleanup MongoDB backup
+        if: always()
+        run: |
+          rm -rf mongodb-backup/

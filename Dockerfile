@@ -20,9 +20,30 @@ RUN \
 # Rebuild the source code only when needed
 FROM base AS builder
 WORKDIR /app
-RUN apt-get update && apt-get install -y curl
+RUN apt-get update && apt-get install -y curl gnupg
+RUN curl -fsSL https://www.mongodb.org/static/pgp/server-8.0.asc | \
+    sudo gpg -o /usr/share/keyrings/mongodb-server-8.0.gpg \
+    --dearmor
+RUN echo "deb [ /usr/share/keyrings/mongodb-server-8.0.gpg ] http://repo.mongodb.org/apt/debian bookworm/mongodb-org/8.0 main" | sudo tee /etc/apt/sources.list.d/mongodb-org-8.0.list
+
+RUN apt-get update && apt-get install -y mongodb-org
+
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
+
+# Start MongoDB
+RUN mkdir -p /data/db
+RUN mongod --fork --logpath /var/log/mongod.log --bind_ip_all
+
+# Restore backup if it exists
+RUN if [ -d "mongodb-backup" ]; then \
+    cd mongodb-backup && \
+    tar xzf *.tar.gz && \
+    mongorestore --drop mongodb_backup_*/i18nfails && \
+    cd ..; \
+    fi
+
+ENV DATABASE_URI=mongodb://localhost:27017/i18nfails
 
 # Next.js collects completely anonymous telemetry data about general usage.
 # Learn more here: https://nextjs.org/telemetry
@@ -34,7 +55,8 @@ RUN \
   elif [ -f package-lock.json ]; then npm run build; \
   elif [ -f pnpm-lock.yaml ]; then corepack enable pnpm && pnpm run build; \
   else echo "Lockfile not found." && exit 1; \
-  fi
+  fi && \
+  mongod --shutdown
 
 # Production image, copy all the files and run next
 FROM base AS runner
