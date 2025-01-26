@@ -182,7 +182,6 @@ export interface Page {
 export interface Post {
   id: string;
   title: string;
-  heroImage?: (string | null) | Media;
   sourceLanguage?: (string | null) | Language;
   destinationLanguages?: (string | Language)[] | null;
   sourceImages?: (string | Media)[] | null;
@@ -202,7 +201,6 @@ export interface Post {
     };
     [k: string]: unknown;
   } | null;
-  relatedPosts?: (string | Post)[] | null;
   relevantLinks?:
     | {
         title: string;
@@ -233,6 +231,28 @@ export interface Post {
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "languages".
+ */
+export interface Language {
+  id: string;
+  name: string;
+  nativeName: string;
+  code: string;
+  slug?: string | null;
+  slugLock?: boolean | null;
+  sourceLanguageOf?: {
+    docs?: (string | Post)[] | null;
+    hasNextPage?: boolean | null;
+  } | null;
+  destinationLanguageOf?: {
+    docs?: (string | Post)[] | null;
+    hasNextPage?: boolean | null;
+  } | null;
+  updatedAt: string;
+  createdAt: string;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -325,28 +345,6 @@ export interface Media {
       filename?: string | null;
     };
   };
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "languages".
- */
-export interface Language {
-  id: string;
-  name: string;
-  nativeName: string;
-  code: string;
-  slug?: string | null;
-  slugLock?: boolean | null;
-  sourceLanguageOf?: {
-    docs?: (string | Post)[] | null;
-    hasNextPage?: boolean | null;
-  } | null;
-  destinationLanguageOf?: {
-    docs?: (string | Post)[] | null;
-    hasNextPage?: boolean | null;
-  } | null;
-  updatedAt: string;
-  createdAt: string;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1228,13 +1226,11 @@ export interface TaxonomyBlockSelect<T extends boolean = true> {
  */
 export interface PostsSelect<T extends boolean = true> {
   title?: T;
-  heroImage?: T;
   sourceLanguage?: T;
   destinationLanguages?: T;
   sourceImages?: T;
   destinationImages?: T;
   content?: T;
-  relatedPosts?: T;
   relevantLinks?:
     | T
     | {

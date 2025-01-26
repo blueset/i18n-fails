@@ -30,7 +30,7 @@ export const Languages: CollectionConfig = {
     {
       name: 'code',
       type: 'text',
-      label: 'ISO 639-1 Code',
+      label: 'BCP 47 code',
       required: true,
     },
     ...slugField('code'),

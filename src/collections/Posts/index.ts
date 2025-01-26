@@ -87,11 +87,6 @@ export const Posts: CollectionConfig<'posts'> = {
         {
           fields: [
             {
-              name: 'heroImage',
-              type: 'upload',
-              relationTo: 'media',
-            },
-            {
               type: 'row',
               fields: [
                 {
@@ -171,22 +166,6 @@ export const Posts: CollectionConfig<'posts'> = {
         },
         {
           fields: [
-            {
-              name: 'relatedPosts',
-              type: 'relationship',
-              admin: {
-                position: 'sidebar',
-              },
-              filterOptions: ({ id }) => {
-                return {
-                  id: {
-                    not_in: [id],
-                  },
-                }
-              },
-              hasMany: true,
-              relationTo: 'posts',
-            },
             {
               name: 'relevantLinks',
               type: 'array',
