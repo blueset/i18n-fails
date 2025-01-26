@@ -74,6 +74,7 @@ jobs:
             tar -czf mongodb_backup_${TIMESTAMP}.tar.gz mongodb_backup_${TIMESTAMP}
             
             # Clean up container's temporary files
+            cd ${{ secrets.MONGO_PATH }}
             docker compose exec mongo rm -rf /tmp/backup
 
       - name: copy file via ssh password
