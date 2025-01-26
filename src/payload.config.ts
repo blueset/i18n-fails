@@ -89,7 +89,7 @@ export default buildConfig({
   //     url: process.env.DATABASE_URI || '',
   //   },
   // }),
-  debug: true,
+  debug: process.env.NODE_ENV === 'development',
   collections: [Pages, Posts, Media, Categories, Users, Products, Languages],
   cors: [getServerSideURL()].filter(Boolean),
   globals: [Header, Footer],
