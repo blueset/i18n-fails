@@ -63,7 +63,7 @@ jobs:
           ssh -i $HOME/.ssh/id_rsa ${{ secrets.VPS_USERNAME }}@${{ secrets.VPS_HOST }} "cd ${{ secrets.MONGO_PATH }} && docker compose exec mongo mongodump --out=/tmp/backup"
 
           echo "cd ${{ secrets.MONGO_PATH }} ++ docker compose cp mongo:/tmp/backup /tmp/mongodb_backup_${TIMESTAMP}"
-          ssh -i $HOME/.ssh/id_rsa ${{ secrets.VPS_USERNAME }}@${{ secrets.VPS_HOST }} "cd ${{ secrets.MONGO_PATH }} && docker compose cp mongo:/tmp/backup /tmp/mongodb_backup_$"{TIMESTAMP}
+          ssh -i $HOME/.ssh/id_rsa ${{ secrets.VPS_USERNAME }}@${{ secrets.VPS_HOST }} "cd ${{ secrets.MONGO_PATH }} && docker compose cp mongo:/tmp/backup /tmp/mongodb_backup_${TIMESTAMP}"
 
           echo "cd /tmp ++ tar -czf mongodb_backup_${TIMESTAMP}.tar.gz mongodb_backup_${TIMESTAMP}"
           ssh -i $HOME/.ssh/id_rsa ${{ secrets.VPS_USERNAME }}@${{ secrets.VPS_HOST }} "cd /tmp && tar -czf mongodb_backup_${TIMESTAMP}.tar.gz mongodb_backup_${TIMESTAMP}"
