@@ -303,6 +303,6 @@ export const post1: Partial<Post> = {
     image: '{{IMAGE_1}}',
     title: 'Digital Horizons: A Glimpse into Tomorrow',
   },
-  relatedPosts: [], // this is populated by the seed script
+  // relatedPosts: [], // this is populated by the seed script
   title: 'Digital Horizons: A Glimpse into Tomorrow',
 }

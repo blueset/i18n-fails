@@ -262,6 +262,6 @@ export const post3: Partial<Post> = {
     image: '{{IMAGE_1}}',
     title: 'Dollar and Sense: The Financial Forecast',
   },
-  relatedPosts: [], // this is populated by the seed script
+  // relatedPosts: [], // this is populated by the seed script
   title: 'Dollar and Sense: The Financial Forecast',
 }

@@ -226,6 +226,6 @@ export const post2: Partial<Post> = {
     image: '{{IMAGE_1}}',
     title: 'Global Gaze: Beyond the Headlines',
   },
-  relatedPosts: [], // this is populated by the seed script
+  // relatedPosts: [], // this is populated by the seed script
   title: 'Global Gaze: Beyond the Headlines',
 }
