@@ -30,7 +30,7 @@ export const generateMeta = async (args: {
   const title =
     doc?.meta?.title && !doc?.meta?.title.match(`(^|\| )?${siteTitle}$`)
       ? doc?.meta?.title + ` | ${siteTitle}`
-      : doc?.meta?.title
+      : doc?.meta?.title || siteTitle
 
   return {
     description: doc?.meta?.description,
