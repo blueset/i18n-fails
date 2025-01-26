@@ -16,6 +16,7 @@ import PageClient from './page.client'
 import { LivePreviewListener } from '@/components/LivePreviewListener'
 import { HeroGallery } from './HeroGallery'
 import { MediaProvider } from '@/components/Lightbox/LightboxProvider'
+import { SerializedEditorState } from '@payloadcms/richtext-lexical/lexical'
 
 export async function generateStaticParams() {
   const payload = await getPayload({ config: configPromise })
@@ -68,7 +69,7 @@ export default async function Post({ params: paramsPromise }: Args) {
           <div className="container lg:grid lg:grid-cols-[1fr_48rem_1fr] ">
             <RichText
               className="col-start-1 col-span-1 md:col-start-2 md:col-span-1"
-              data={post.content}
+              data={post.content as SerializedEditorState}
               enableGutter={false}
             />
             {/* {post.relatedPosts && post.relatedPosts.length > 0 && (

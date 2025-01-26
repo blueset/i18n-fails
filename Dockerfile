@@ -26,20 +26,20 @@ RUN curl -fsSL https://www.mongodb.org/static/pgp/server-8.0.asc | \
     --dearmor
 RUN echo "deb [ signed-by=/usr/share/keyrings/mongodb-server-8.0.gpg ] http://repo.mongodb.org/apt/debian bookworm/mongodb-org/8.0 main" | tee /etc/apt/sources.list.d/mongodb-org-8.0.list
 
-RUN apt-get update && apt-get install -y mongodb-org
+RUN apt-get update && apt-get install -y mongodb-org 
 
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
 # Start MongoDB
 RUN mkdir -p /data/db
-RUN mongod --fork --logpath /var/log/mongod.log --bind_ip_all
 
 # Restore backup if it exists
 RUN if [ -d "mongodb-backup" ]; then \
     cd mongodb-backup && \
     tar xzf *.tar.gz && \
-    mongorestore --drop mongodb_backup_*/i18nfails && \
+    mongod --fork --logpath /var/log/mongod.log --bind_ip_all && \
+    mongorestore --host 127.0.0.1 --drop mongodb_backup_*/i18nfails && \
     cd ..; \
     fi
 
@@ -51,12 +51,12 @@ ENV DATABASE_URI=mongodb://localhost:27017/i18nfails
 # ENV NEXT_TELEMETRY_DISABLED 1
 
 RUN \
+  mongod --fork --logpath /var/log/mongod.log --bind_ip_all && \
   if [ -f yarn.lock ]; then yarn run build; \
   elif [ -f package-lock.json ]; then npm run build; \
   elif [ -f pnpm-lock.yaml ]; then corepack enable pnpm && pnpm run build; \
   else echo "Lockfile not found." && exit 1; \
-  fi && \
-  mongod --shutdown
+  fi
 
 # Production image, copy all the files and run next
 FROM base AS runner
