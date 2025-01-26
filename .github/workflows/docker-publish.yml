@@ -52,6 +52,7 @@ jobs:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USERNAME }}
           key: ${{ secrets.SSH_KEY }}
+          protocol: tcp6
           script: |
             # Get current timestamp for backup name
             TIMESTAMP=$(date +%Y%m%d_%H%M%S)
@@ -76,7 +77,8 @@ jobs:
         with:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USERNAME }}
-          password: ${{ secrets.PASSWORD }}
+          key: ${{ secrets.SSH_KEY }}
+          protocol: tcp6
           source: "/tmp/mongodb_backup_*.tar.gz"
           target: ./mongodb-backup/
 
@@ -86,6 +88,7 @@ jobs:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USERNAME }}
           key: ${{ secrets.SSH_KEY }}
+          protocol: tcp6
           script: |
             rm -rf /tmp/mongodb_backup_*
 
