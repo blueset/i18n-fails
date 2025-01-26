@@ -1,9 +1,9 @@
 import { revalidatePath } from 'next/cache'
-import { PayloadRequest } from 'payload'
 import { getPayload } from 'payload'
 import config from '@payload-config'
+import { NextRequest } from 'next/server'
 
-export async function POST(req: PayloadRequest) {
+export async function POST(req: NextRequest) {
   const payload = await getPayload({ config })
   const result = await payload.auth({ headers: req.headers })
 
