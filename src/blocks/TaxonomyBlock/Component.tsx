@@ -45,6 +45,7 @@ export const TaxonomyBlock: React.FC<
           .find({
             collection: 'products',
             pagination: false,
+            sort: ['slug'],
           })
           .then((t) => t.docs)
       : [],
@@ -53,6 +54,7 @@ export const TaxonomyBlock: React.FC<
           .find({
             collection: 'languages',
             pagination: false,
+            sort: ['slug'],
           })
           .then((t) => t.docs)
       : [],
@@ -61,6 +63,7 @@ export const TaxonomyBlock: React.FC<
           .find({
             collection: 'categories',
             pagination: false,
+            sort: ['slug'],
           })
           .then((t) => t.docs)
       : [],
@@ -94,14 +97,8 @@ export const TaxonomyBlock: React.FC<
           return queries.categories
       }
     })
-    .map(function <T extends Array<Product | Language | Category>>(
-      result: T,
-      idx: number,
-    ): [TaxonomyType, T] {
-      return [
-        taxonomiesToShow[idx]!,
-        result.sort((a, b) => a.slug?.localeCompare(b?.slug ?? '') ?? 0),
-      ]
+    .map(function <T>(result: T, idx: number): [TaxonomyType, T] {
+      return [taxonomiesToShow[idx]!, result]
     })
 
   return (
