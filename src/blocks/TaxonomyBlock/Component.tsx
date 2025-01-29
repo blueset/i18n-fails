@@ -6,13 +6,12 @@ import type {
 } from '@/payload-types'
 
 import configPromise from '@payload-config'
-import { getPayload, PaginatedDocs } from 'payload'
+import { getPayload } from 'payload'
 import React, { Fragment } from 'react'
 import RichText from '@/components/RichText'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
-
-type TaxonomyType = Exclude<TaxonomyBlockProps['taxonomiesToShow'], null | undefined>[number]
+import { TaxonommyChips, TaxonomyType, taxonomyUrlSlugMapping } from './Chips'
 
 const taxonomyCollectionMapping = {
   vendors: 'products',
@@ -30,15 +29,6 @@ const taxonomyNameMapping = {
   sourceLanguages: 'Source languages',
   targetLanguages: 'Target languages',
   categories: 'Tags',
-} as const satisfies Record<TaxonomyType, string>
-
-const taxonomyUrlSlugMapping = {
-  vendors: 'vendors',
-  products: 'products',
-  languages: 'languages',
-  sourceLanguages: 'source-languages',
-  targetLanguages: 'target-languages',
-  categories: 'categories',
 } as const satisfies Record<TaxonomyType, string>
 
 export const TaxonomyBlock: React.FC<
@@ -130,15 +120,7 @@ export const TaxonomyBlock: React.FC<
                     {taxonomyNameMapping[taxonomy]}
                   </Link>
                 </Button>
-                <div className="flex gap-2 flex-wrap">
-                  {docs.map((d) => (
-                    <Button asChild variant="chip" size="xs" key={d.id}>
-                      <Link href={`/${taxonomyUrlSlugMapping[taxonomy]}/${d.slug}`}>
-                        {'name' in d ? d.name : 'title' in d ? d.title : ''}
-                      </Link>
-                    </Button>
-                  ))}
-                </div>
+                <TaxonommyChips docs={docs} taxonomy={taxonomy} />
               </Fragment>
             )
           })}
