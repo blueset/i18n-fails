@@ -3,19 +3,8 @@
 import { Product, Category, Language } from '@/payload-types'
 import Link from 'next/link'
 import { OverflowList } from 'react-overflow-list'
-import type { TaxonomyBlock as TaxonomyBlockProps } from '@/payload-types'
 import { Button } from '@/components/ui/button'
-
-export type TaxonomyType = Exclude<TaxonomyBlockProps['taxonomiesToShow'], null | undefined>[number]
-
-export const taxonomyUrlSlugMapping = {
-  vendors: 'vendors',
-  products: 'products',
-  languages: 'languages',
-  sourceLanguages: 'source-languages',
-  targetLanguages: 'target-languages',
-  categories: 'categories',
-} as const satisfies Record<TaxonomyType, string>
+import { TaxonomyType, taxonomyUrlSlugMapping } from './consts'
 
 export function TaxonommyChips({
   docs,
@@ -28,7 +17,7 @@ export function TaxonommyChips({
     <OverflowList
       className="gap-2"
       items={docs}
-      itemRenderer={function (item, index: number): React.ReactNode {
+      itemRenderer={function (item): React.ReactNode {
         return (
           <Button asChild variant="chip" size="xs" key={item.id}>
             <Link href={`/${taxonomyUrlSlugMapping[taxonomy]}/${item.slug}`}>

@@ -11,25 +11,13 @@ import React, { Fragment } from 'react'
 import RichText from '@/components/RichText'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
-import { TaxonommyChips, TaxonomyType, taxonomyUrlSlugMapping } from './Chips'
-
-const taxonomyCollectionMapping = {
-  vendors: 'products',
-  products: 'products',
-  languages: 'languages',
-  sourceLanguages: 'languages',
-  targetLanguages: 'languages',
-  categories: 'categories',
-} as const satisfies Record<TaxonomyType, string>
-
-const taxonomyNameMapping = {
-  vendors: 'Vendors',
-  products: 'Products',
-  languages: 'Languages',
-  sourceLanguages: 'Source languages',
-  targetLanguages: 'Target languages',
-  categories: 'Tags',
-} as const satisfies Record<TaxonomyType, string>
+import { TaxonommyChips } from './Chips'
+import {
+  taxonomyCollectionMapping,
+  taxonomyNameMapping,
+  TaxonomyType,
+  taxonomyUrlSlugMapping,
+} from './consts'
 
 export const TaxonomyBlock: React.FC<
   TaxonomyBlockProps & {
