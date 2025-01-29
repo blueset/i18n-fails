@@ -94,8 +94,14 @@ export const TaxonomyBlock: React.FC<
           return queries.categories
       }
     })
-    .map(function <T>(result: T, idx: number): [TaxonomyType, T] {
-      return [taxonomiesToShow[idx]!, result]
+    .map(function <T extends Array<Product | Language | Category>>(
+      result: T,
+      idx: number,
+    ): [TaxonomyType, T] {
+      return [
+        taxonomiesToShow[idx]!,
+        result.sort((a, b) => a.slug?.localeCompare(b?.slug ?? '') ?? 0),
+      ]
     })
 
   return (
