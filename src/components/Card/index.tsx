@@ -52,7 +52,7 @@ export const Card: React.FC<{
           <Media
             fill
             resource={metaImage}
-            size={`200vw, (min-width: ${cssVariables.breakpoints.md}px) 10vw, (min-width: ${cssVariables.breakpoints.lg}px) 66vw`}
+            size={`(max-width: ${cssVariables.breakpoints.md}px), 100vw, (min-width: ${cssVariables.breakpoints.lg}px) 50vw, 33vw`}
             imgClassName="object-cover"
           />
         )}
