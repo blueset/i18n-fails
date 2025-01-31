@@ -6,7 +6,6 @@ import React from 'react'
 import { siteTitle } from '@/utilities/constants'
 import Link from 'next/link'
 import { Product } from '@/payload-types'
-import { ImageMedia } from '@/components/Media/ImageMedia'
 import { ProductLogo } from '@/components/ProductLogo/ProductLogo'
 
 export const dynamic = 'force-static'
@@ -88,9 +87,11 @@ export default async function Page() {
       </div>
 
       <div className="container">
-        {tree.map((node) => (
-          <TreeNode key={node.id} node={node} level={0} />
-        ))}
+        {tree
+          .sort((a, b) => a.title.localeCompare(b.title))
+          .map((node) => (
+            <TreeNode key={node.id} node={node} level={0} />
+          ))}
       </div>
     </div>
   )

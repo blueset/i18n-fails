@@ -18,6 +18,7 @@ export default async function Page() {
     depth: 1,
     pagination: false,
     overrideAccess: false,
+    sort: ['title'],
     select: {
       title: true,
       slug: true,
