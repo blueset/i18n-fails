@@ -5,6 +5,7 @@ import Link from 'next/link'
 import React, { Fragment } from 'react'
 
 import type { Post } from '@/payload-types'
+import { cssVariables } from '@/cssVariables'
 
 import { Media } from '@/components/Media'
 import { Button } from '../ui/button'
@@ -48,7 +49,12 @@ export const Card: React.FC<{
           </div>
         )}
         {metaImage && typeof metaImage !== 'string' && (
-          <Media fill resource={metaImage} size="33vw" imgClassName="object-cover" />
+          <Media
+            fill
+            resource={metaImage}
+            size={`200vw, (min-width: ${cssVariables.breakpoints.md}px) 10vw, (min-width: ${cssVariables.breakpoints.lg}px) 66vw`}
+            imgClassName="object-cover"
+          />
         )}
       </div>
       <div className="p-4 flex flex-col gap-2">
