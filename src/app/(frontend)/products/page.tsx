@@ -59,6 +59,7 @@ export default async function Page() {
     collection: 'products',
     depth: 1,
     limit: -1,
+    pagination: false,
     overrideAccess: false,
     select: {
       title: true,
