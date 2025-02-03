@@ -63,6 +63,7 @@ function RenderOneGallery({
           key={image.id}
           blockType="mediaBlock"
           className="p-0"
+          imgClassName="mx-auto"
           captionClassName="p-0"
           media={image}
         />
@@ -99,6 +100,7 @@ function RenderTwoGalleries({
             key={image.id}
             blockType="mediaBlock"
             className="p-0"
+            imgClassName="mx-auto md:mr-auto md:ml-0"
             captionClassName="p-0"
             media={image}
           />
@@ -120,7 +122,8 @@ function RenderTwoGalleries({
             key={image.id}
             blockType="mediaBlock"
             className="p-0"
-            captionClassName="p-0"
+            imgClassName="mx-auto md:ml-auto md:mr-0"
+            captionClassName="p-0 md:text-right"
             media={image}
           />
         ))}

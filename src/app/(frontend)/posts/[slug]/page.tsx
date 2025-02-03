@@ -64,9 +64,9 @@ export default async function Post({ params: paramsPromise }: Args) {
         <HeroGallery post={post} />
 
         <div className="flex flex-col items-center gap-4">
-          <div className="container lg:grid lg:grid-cols-[1fr_48rem_1fr] ">
+          <div className="container lg:grid lg:grid-cols-[1fr_48rem_1fr]">
             <RichText
-              className="col-start-1 col-span-1 md:col-start-2 md:col-span-1"
+              className="col-start-1 col-span-1 md:col-start-2 md:col-span-1 w-full"
               data={post.content as SerializedEditorState}
               enableGutter={false}
             />
@@ -77,7 +77,7 @@ export default async function Post({ params: paramsPromise }: Args) {
             />
           )} */}
             {post.relevantLinks && post.relevantLinks.length > 0 && (
-              <div className="prose md:prose-md dark:prose-invert col-start-1 col-span-1 md:col-start-2 md:col-span-1 mt-12 max-w-none">
+              <div className="prose md:prose-md dark:prose-invert col-start-1 col-span-1 md:col-start-2 md:col-span-1 mt-12 max-w-none w-full">
                 <h2>External links</h2>
                 <ul>
                   {post.relevantLinks.map((link) => {
