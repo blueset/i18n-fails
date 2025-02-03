@@ -71,7 +71,7 @@ export const ArchiveBlock: React.FC<
       )}
       <CollectionArchive posts={posts} />
       {enableLink && (
-        <div className="container mt-4 text-center">
+        <div className="container mt-4 lg:mt-8 text-center">
           <CMSLink {...link} />
         </div>
       )}
