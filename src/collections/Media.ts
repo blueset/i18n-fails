@@ -1,4 +1,4 @@
-import type { CollectionConfig } from 'payload'
+import { type CollectionConfig } from 'payload'
 
 import {
   FixedToolbarFeature,
@@ -78,5 +78,11 @@ export const Media: CollectionConfig = {
         crop: 'center',
       },
     ],
+    modifyResponseHeaders: ({ headers }) => {
+      if (headers.get('content-type') === 'application/xml') {
+        headers.set('content-type', 'image/svg+xml; charset=utf-8')
+      }
+      return headers
+    },
   },
 }
