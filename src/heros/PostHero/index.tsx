@@ -14,7 +14,8 @@ import { ProductLogo } from '@/components/ProductLogo/ProductLogo'
 export const PostHero: React.FC<{
   post: Post
 }> = async ({ post }) => {
-  const { categories, publishedAt, title, product, sourceImages, destinationImages } = post
+  const { categories, publishedAt, title, product, sourceImages, destinationImages, meta } = post
+  const description = meta?.description
   const hasBothImages = sourceImages?.length && destinationImages?.length
   const payload = await getPayload({ config })
 
@@ -35,7 +36,12 @@ export const PostHero: React.FC<{
           hasBothImages ? 'md:col-start-1 md:col-span-3' : 'md:col-start-2 md:col-span-1',
         )}
       >
-        <h1 className="mb-6 text-3xl md:text-5xl lg:text-6xl text-balance">{title}</h1>
+        <header className="mb-6 flex flex-col gap-2 lg:gap-4 max-w-4xl">
+          <h1 className="text-3xl md:text-5xl lg:text-6xl text-balance">{title}</h1>
+          {description && (
+            <p className="text-lg lg:text-2xl text-muted-foreground">{description}</p>
+          )}
+        </header>
 
         <div className="flex flex-col md:flex-row gap-4 md:gap-16">
           {categories && (
