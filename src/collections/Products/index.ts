@@ -47,11 +47,11 @@ export const Products: CollectionConfig = {
         hidden: true,
       },
       hooks: {
-        beforeChange: [
-          ({ data }) => {
-            delete data?.path
-          },
-        ],
+        // beforeChange: [
+        //   ({ data }) => {
+        //     delete data?.path
+        //   },
+        // ],
         afterRead: [
           ({ data }) => {
             return (
