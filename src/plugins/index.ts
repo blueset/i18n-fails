@@ -10,10 +10,12 @@ import { GenerateTitle, GenerateURL } from '@payloadcms/plugin-seo/types'
 import { FixedToolbarFeature, HeadingFeature, lexicalEditor } from '@payloadcms/richtext-lexical'
 import { searchFields } from '@/search/fieldOverrides'
 import { beforeSyncWithSearch } from '@/search/beforeSync'
+import computeBlurhash from 'payload-blurhash-plugin'
 
 import { Page, Post } from '@/payload-types'
 import { getServerSideURL } from '@/utilities/getURL'
-import { siteTitle } from '@/utilities/constants'
+import { siteDescription, siteTitle } from '@/utilities/constants'
+import { limitPlugin } from './limitPlugin'
 
 const generateTitle: GenerateTitle<Post | Page> = ({ doc }) => {
   return doc?.title || siteTitle
@@ -56,6 +58,8 @@ export const plugins: Plugin[] = [
   seoPlugin({
     generateTitle,
     generateURL,
+    generateDescription: ({ doc }) => doc?.meta?.description || `${siteTitle}: ${siteDescription}`,
+    generateImage: ({ doc }) => doc?.destinationImages?.at(0) || doc?.sourceImages?.at(0) || null,
   }),
   formBuilderPlugin({
     fields: {
@@ -93,4 +97,6 @@ export const plugins: Plugin[] = [
     },
   }),
   payloadCloudPlugin(),
+  limitPlugin,
+  computeBlurhash(),
 ]
