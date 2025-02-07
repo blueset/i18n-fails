@@ -91,7 +91,7 @@ export const ImageMedia: React.FC<MediaProps> = (props) => {
   const computedBlurDataURL =
     useMemo(() => {
       if (!blurhash) return undefined
-      if (!canUseDom) return undefined
+      if (!canUseDOM) return undefined
       // decode blurHash image
       const pixels = decodeBlurHash('LEHV6nWB2yk8pyo0adR*.7kCMdnj', 32, 32)
 
@@ -104,7 +104,7 @@ export const ImageMedia: React.FC<MediaProps> = (props) => {
       ctx.putImageData(imageData, 0, 0)
       const dataURL = canvas.toDataURL()
       return dataURL
-    }, [blurhash, canUseDom]) || blurDataURL
+    }, [blurhash, canUseDOM]) || blurDataURL
 
   return (
     <picture className={cn(className)}>
