@@ -4,6 +4,7 @@ import React from 'react'
 import { SeedButton } from './SeedButton'
 import './index.scss'
 import { RevalidateCache } from './RevalidateCache'
+import { ResaveCollection } from './ResaveCollection'
 
 const baseClass = 'before-dashboard'
 
@@ -23,6 +24,9 @@ const BeforeDashboard: React.FC = () => {
             visit your website
           </a>
           {' to see the results.'}
+        </li>
+        <li>
+          <ResaveCollection />
         </li>
         <li>
           If you created this repo using Payload Cloud, head over to GitHub and clone it to your

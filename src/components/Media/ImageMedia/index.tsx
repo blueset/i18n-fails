@@ -60,7 +60,7 @@ export const ImageMedia: React.FC<MediaProps> = (props) => {
     alt = altFromResource || ''
     focalX = focalXFromResource ?? undefined
     focalY = focalYFromResource ?? undefined
-    blurhash = blurhashFromResource
+    blurhash = blurhashFromResource ?? undefined
 
     const cacheTag = resource.updatedAt
 

@@ -1,0 +1,19 @@
+.form {
+  max-width: 40rem;
+  margin-bottom: 2rem;
+}
+
+.row {
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
+  > :global(.select) {
+    width: 0;
+    flex-grow: 5;
+  }
+  > button {
+    width: 0;
+    flex-grow: 1;
+    margin: 0;
+  }
+}
