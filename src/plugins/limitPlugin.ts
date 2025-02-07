@@ -11,8 +11,11 @@ export function limitPlugin(config: Config): Config {
       preferenceCollection.hooks.beforeChange = []
     }
     preferenceCollection.hooks.beforeChange.push((req) => {
-      if ((req.operation === 'update' || req.operation === 'create') && req.data.limit === 1) {
-        req.data.limit = 50
+      if (
+        (req.operation === 'update' || req.operation === 'create') &&
+        req.data?.value?.limit === 1
+      ) {
+        req.data.value.limit = 50
       }
       return req
     })
