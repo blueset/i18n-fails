@@ -4,7 +4,8 @@ import type { StaticImageData } from 'next/image'
 
 import { cn } from '@/utilities/ui'
 import NextImage from 'next/image'
-import React from 'react'
+import React, { useMemo } from 'react'
+import { decodeBlurHash } from 'fast-blurhash'
 
 import type { Props as MediaProps } from '../types'
 
@@ -40,6 +41,7 @@ export const ImageMedia: React.FC<MediaProps> = (props) => {
   let src: StaticImageData | string = srcFromProps || ''
   let focalX: number | undefined
   let focalY: number | undefined
+  let blurhash: string | undefined
 
   if (!src && resource && typeof resource === 'object') {
     const {
@@ -50,6 +52,7 @@ export const ImageMedia: React.FC<MediaProps> = (props) => {
       width: fullWidth,
       focalX: focalXFromResource,
       focalY: focalYFromResource,
+      blurhash: blurhashFromResource,
     } = resource
 
     width = fullWidth!
@@ -57,10 +60,15 @@ export const ImageMedia: React.FC<MediaProps> = (props) => {
     alt = altFromResource || ''
     focalX = focalXFromResource ?? undefined
     focalY = focalYFromResource ?? undefined
+    blurhash = blurhashFromResource
 
     const cacheTag = resource.updatedAt
 
-    src = `${getClientSideURL()}${url}?${cacheTag}`
+    if (url?.startsWith('http')) {
+      src = `${url}?${cacheTag}`
+    } else {
+      src = `${getClientSideURL()}${url}?${cacheTag}`
+    }
   }
 
   const loading = loadingFromProps || (!priority ? 'lazy' : undefined)
@@ -79,6 +87,23 @@ export const ImageMedia: React.FC<MediaProps> = (props) => {
       ? { objectPosition: `${focalX}% ${focalY}%` }
       : undefined
 
+  const computedBlurDataURL =
+    useMemo(() => {
+      if (!blurhash) return undefined
+      // decode blurHash image
+      const pixels = decodeBlurHash('LEHV6nWB2yk8pyo0adR*.7kCMdnj', 32, 32)
+
+      // draw it on canvas
+      const canvas = document.createElement('canvas')
+      const ctx = canvas.getContext('2d')
+      if (!ctx) return undefined
+      const imageData = ctx.createImageData(32, 32)
+      imageData.data.set(pixels)
+      ctx.putImageData(imageData, 0, 0)
+      const dataURL = canvas.toDataURL()
+      return dataURL
+    }, [blurhash]) || blurDataURL
+
   return (
     <picture className={cn(className)}>
       <NextImage
@@ -89,7 +114,7 @@ export const ImageMedia: React.FC<MediaProps> = (props) => {
         style={style}
         height={!fill ? height : undefined}
         placeholder="blur"
-        blurDataURL={blurDataURL}
+        blurDataURL={computedBlurDataURL}
         priority={priority}
         quality={100}
         loading={loading}
