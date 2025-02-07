@@ -38,13 +38,12 @@ export async function POST(
     await Promise.all(
       document.docs.map(async (document) => {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { id, ...imageData } = document
+        const { id } = document
         await payload.update({
           id: document.id,
+          req: payloadReq,
           collection: collection,
-          data: {
-            ...imageData,
-          },
+          data: {},
         })
       }),
     )
