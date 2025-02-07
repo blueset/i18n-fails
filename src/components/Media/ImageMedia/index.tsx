@@ -6,6 +6,7 @@ import { cn } from '@/utilities/ui'
 import NextImage from 'next/image'
 import React, { useMemo } from 'react'
 import { decodeBlurHash } from 'fast-blurhash'
+import canUseDOM from '@/utilities/canUseDOM'
 
 import type { Props as MediaProps } from '../types'
 
@@ -90,6 +91,7 @@ export const ImageMedia: React.FC<MediaProps> = (props) => {
   const computedBlurDataURL =
     useMemo(() => {
       if (!blurhash) return undefined
+      if (!canUseDom) return undefined
       // decode blurHash image
       const pixels = decodeBlurHash('LEHV6nWB2yk8pyo0adR*.7kCMdnj', 32, 32)
 
@@ -102,7 +104,7 @@ export const ImageMedia: React.FC<MediaProps> = (props) => {
       ctx.putImageData(imageData, 0, 0)
       const dataURL = canvas.toDataURL()
       return dataURL
-    }, [blurhash]) || blurDataURL
+    }, [blurhash, canUseDom]) || blurDataURL
 
   return (
     <picture className={cn(className)}>
