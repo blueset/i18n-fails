@@ -113,6 +113,7 @@ export async function GET() {
     collection: 'posts',
     depth: 1,
     limit: 12,
+    draft: false,
     overrideAccess: false,
   })
 
@@ -151,6 +152,24 @@ export async function GET() {
                 return `<blockquote>${styleEmoji} ${await convertLexicalNodesToHTML({ lexicalNodes: content, parent: { ...node, parent }, ...args })}</blockquote>`
               }
               return `<div>[Block (${blockType}): ${(node as any).fields.blockName || '-'}]</div>`
+            }
+            if (node.type === 'langTag') {
+              return `<span lang="${escapeHTML((node as any).fields.lang)}">${await convertLexicalNodesToHTML(
+                {
+                  lexicalNodes: (node as any).children,
+                  parent: { ...node, parent },
+                  ...args,
+                },
+              )}</span>`
+            }
+            if (node.type === 'abbr') {
+              return `<abbr title="${escapeHTML((node as any).fields.title)}">${await convertLexicalNodesToHTML(
+                {
+                  lexicalNodes: (node as any).children,
+                  parent: { ...node, parent },
+                  ...args,
+                },
+              )}</abbr>`
             }
             return `<div>[Node: ${node.type}]</div>`
           },

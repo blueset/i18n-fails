@@ -41,15 +41,18 @@ export const ArchiveBlock: React.FC<
       depth: 1,
       draft: false,
       limit,
-      ...(flattenedCategories && flattenedCategories.length > 0
-        ? {
-            where: {
+      where: {
+        _status: {
+          not_equals: 'draft',
+        },
+        ...(flattenedCategories && flattenedCategories.length > 0
+          ? {
               categories: {
                 in: flattenedCategories,
               },
-            },
-          }
-        : {}),
+            }
+          : {}),
+      },
     })
 
     posts = fetchedPosts.docs
