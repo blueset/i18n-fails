@@ -51,7 +51,7 @@ async function FeedPostBody({
       {await Promise.all(
         sourceImages.map(async (image) => (
           <figure key={image.id}>
-            <img src={siteUrl + image.url} alt={image.alt ?? ''} />
+            <img src={'' + image.url} alt={image.alt ?? ''} />
             {image.caption && (
               <figcaption
                 dangerouslySetInnerHTML={{ __html: await richTextToHTML(image.caption) }}
@@ -74,7 +74,7 @@ async function FeedPostBody({
       {await Promise.all(
         destinationImages.map(async (image) => (
           <figure key={image.id}>
-            <img src={siteUrl + image.url} alt={image.alt ?? ''} />
+            <img src={'' + image.url} alt={image.alt ?? ''} />
             {image.caption && (
               <figcaption
                 dangerouslySetInnerHTML={{ __html: await richTextToHTML(image.caption) }}
