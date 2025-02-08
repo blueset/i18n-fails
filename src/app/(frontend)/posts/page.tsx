@@ -20,6 +20,7 @@ export default async function Page() {
     depth: 1,
     limit: 12,
     overrideAccess: false,
+    draft: false,
     select: {
       title: true,
       slug: true,

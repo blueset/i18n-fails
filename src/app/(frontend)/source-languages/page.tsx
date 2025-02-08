@@ -18,6 +18,7 @@ export default async function Page() {
       depth: 1,
       limit: -1,
       overrideAccess: false,
+      sort: ['code'],
       select: {
         name: true,
         nativeName: true,

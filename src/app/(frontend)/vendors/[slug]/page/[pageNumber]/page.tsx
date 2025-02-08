@@ -43,6 +43,7 @@ export default async function Page({ params: paramsPromise }: Args) {
     depth: 1,
     limit: 12,
     page: sanitizedPageNumber,
+    draft: false,
     overrideAccess: false,
     where: {
       product: {

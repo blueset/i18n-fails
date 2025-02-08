@@ -42,6 +42,7 @@ export default async function Page({ params: paramsPromise }: Args) {
     collection: 'posts',
     depth: 1,
     limit: 12,
+    draft: false,
     page: sanitizedPageNumber,
     overrideAccess: false,
     where: {

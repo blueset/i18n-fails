@@ -37,6 +37,7 @@ export default async function Page({ params: paramsPromise }: Args) {
     depth: 1,
     limit: 12,
     overrideAccess: false,
+    draft: false,
     where: {
       product: {
         in: childProducts.map(({ id }) => id),
