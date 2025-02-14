@@ -2,6 +2,7 @@
 
 import React, { createContext, useContext, useEffect, useRef, useState, useCallback } from 'react'
 import Lightbox, {
+  ControllerRef,
   isImageFitCover,
   isImageSlide,
   RenderSlideProps,
@@ -78,6 +79,10 @@ const MediaContext = createContext<MediaContextValue | null>(null)
 export function MediaProvider({ children }: { children: React.ReactNode }) {
   const [index, setIndex] = useState(-1)
   const [mediaArray, setMediaArray] = useState<MediaData[]>([])
+
+  const ref = useRef<ControllerRef>(null)
+  const hasPushStateRef = useRef(false)
+
   const slides = mediaArray.map(
     (m): Slide => ({
       src: m.url!,
@@ -115,14 +120,55 @@ export function MediaProvider({ children }: { children: React.ReactNode }) {
 
   const getIndex = useCallback((m: MediaData) => mediaArray.indexOf(m), [mediaArray])
 
+  useEffect(() => {
+    const handlePopState = () => {
+      if (index >= 0) {
+        if (ref.current) {
+          hasPushStateRef.current = false
+          ref.current.close()
+        } else {
+          setIndex(-1)
+        }
+      } else {
+        hasPushStateRef.current = false
+      }
+    }
+
+    window.addEventListener('popstate', handlePopState)
+    return () => window.removeEventListener('popstate', handlePopState)
+  }, [index])
+
+  const handleShowIndex = useCallback((newIndex: number) => {
+    if (newIndex >= 0) {
+      window.history.pushState({ lightbox: true }, '')
+      hasPushStateRef.current = true
+    }
+    setIndex(newIndex)
+  }, [])
+
+  const handleClose = useCallback(() => {
+    if (hasPushStateRef.current) {
+      window.history.back()
+    } else {
+      setIndex(-1)
+    }
+  }, [])
+
   return (
     <MediaContext.Provider
-      value={{ mediaArray, addMedia, updateMedia, removeMedia, getIndex, showIndex: setIndex }}
+      value={{
+        mediaArray,
+        addMedia,
+        updateMedia,
+        removeMedia,
+        getIndex,
+        showIndex: handleShowIndex,
+      }}
     >
-      {/* Existing child component with ref */}
       <Lightbox
+        controller={{ ref }}
         open={index >= 0}
-        close={() => setIndex(-1)}
+        close={handleClose}
         index={index}
         slides={slides}
         plugins={[Captions, Zoom]}
