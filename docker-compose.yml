@@ -3,6 +3,7 @@ version: '3'
 services:
   payload:
     image: ghcr.io/blueset/i18n-fails:master
+    restart: unless-stopped
     ports:
       - '41863:3000'
     volumes:
@@ -16,6 +17,7 @@ services:
 
   mongo:
     image: mongo:latest
+    restart: unless-stopped
     command:
       - --storageEngine=wiredTiger
     volumes:
