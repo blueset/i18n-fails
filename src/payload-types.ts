@@ -402,6 +402,21 @@ export interface Category {
   title: string;
   slug?: string | null;
   slugLock?: boolean | null;
+  content?: {
+    root: {
+      type: string;
+      children: {
+        type: string;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
   parent?: (string | null) | Category;
   breadcrumbs?:
     | {
@@ -1364,6 +1379,7 @@ export interface CategoriesSelect<T extends boolean = true> {
   title?: T;
   slug?: T;
   slugLock?: T;
+  content?: T;
   parent?: T;
   breadcrumbs?:
     | T

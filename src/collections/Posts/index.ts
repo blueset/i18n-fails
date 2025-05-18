@@ -154,6 +154,7 @@ export const Posts: CollectionConfig<'posts'> = {
                       blocks: [Banner, Code, MediaBlock],
                       inlineBlocks: [InlineLangBlock],
                     }),
+                    InlineCodeFeature(),
                     FixedToolbarFeature(),
                     InlineToolbarFeature(),
                     HorizontalRuleFeature(),

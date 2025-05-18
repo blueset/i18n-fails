@@ -1,14 +1,14 @@
 import type { Metadata } from 'next'
 
-import { PayloadRedirects } from '@/components/PayloadRedirects'
 import configPromise from '@payload-config'
 import { getPayload } from 'payload'
 import { draftMode } from 'next/headers'
 import React, { cache } from 'react'
-import RichText from '@/components/RichText'
 
 import type { Post } from '@/payload-types'
 
+import RichText from '@/components/RichText'
+import { PayloadRedirects } from '@/components/PayloadRedirects'
 import { PostHero } from '@/heros/PostHero'
 import { generateMeta } from '@/utilities/generateMeta'
 import { LivePreviewListener } from '@/components/LivePreviewListener'
@@ -64,20 +64,20 @@ export default async function Post({ params: paramsPromise }: Args) {
         <HeroGallery post={post} />
 
         <div className="flex flex-col items-center gap-4">
-          <div className="container lg:grid lg:grid-cols-[1fr_48rem_1fr]">
+          <div className="lg:grid lg:grid-cols-[1fr_48rem_1fr] container">
             <RichText
-              className="col-start-1 col-span-1 md:col-start-2 md:col-span-1 w-full"
+              className="col-span-1 md:col-span-1 col-start-1 md:col-start-2 w-full"
               data={post.content as SerializedEditorState}
               enableGutter={false}
             />
             {/* {post.relatedPosts && post.relatedPosts.length > 0 && (
             <RelatedPosts
-              className="mt-12 max-w-[52rem] lg:grid lg:grid-cols-subgrid col-start-1 col-span-3 grid-rows-[2fr]"
+              className="lg:grid lg:grid-cols-subgrid grid-rows-[2fr] col-span-3 col-start-1 mt-12 max-w-[52rem]"
               docs={post.relatedPosts.filter((post) => typeof post === 'object')}
             />
           )} */}
             {post.relevantLinks && post.relevantLinks.length > 0 && (
-              <div className="prose md:prose-md dark:prose-invert col-start-1 col-span-1 md:col-start-2 md:col-span-1 mt-12 max-w-none w-full">
+              <div className="col-span-1 md:col-span-1 col-start-1 md:col-start-2 dark:prose-invert mt-12 w-full max-w-none prose md:prose-md">
                 <h2>External links</h2>
                 <ul>
                   {post.relevantLinks.map((link) => {
