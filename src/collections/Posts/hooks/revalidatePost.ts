@@ -28,6 +28,7 @@ export const revalidatePost: CollectionAfterChangeHook<Post> = ({
       revalidatePath(oldPath)
       revalidateTag('posts-sitemap')
     }
+    revalidatePath('/')
   }
   return doc
 }
@@ -37,6 +38,7 @@ export const revalidateDelete: CollectionAfterDeleteHook<Post> = ({ doc, req: { 
     const path = `/posts/${doc?.slug}`
 
     revalidatePath(path)
+    revalidatePath('/')
     revalidateTag('posts-sitemap')
   }
 

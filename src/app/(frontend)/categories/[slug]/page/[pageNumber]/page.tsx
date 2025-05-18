@@ -9,6 +9,8 @@ import React from 'react'
 import { notFound } from 'next/navigation'
 import { siteTitle } from '@/utilities/constants'
 import { queryBySlug } from '../../queryBySlug'
+import { SerializedEditorState } from '@payloadcms/richtext-lexical/lexical'
+import RichText from '@/components/RichText'
 
 export const revalidate = 600
 
@@ -47,13 +49,22 @@ export default async function Page({ params: paramsPromise }: Args) {
 
   return (
     <div className="pt-24 pb-24">
-      <div className="container mb-16">
-        <div className="prose dark:prose-invert max-w-none">
+      <div className="mb-16 container">
+        <div className="dark:prose-invert max-w-none prose">
           <h1>Tag: {category?.title}</h1>
         </div>
+        {category.content && (
+          <div className="dark:prose-invert prose">
+            <RichText
+              className="col-span-1 md:col-span-1 col-start-1 md:col-start-2 w-full"
+              data={category.content as SerializedEditorState}
+              enableGutter={false}
+            />
+          </div>
+        )}
       </div>
 
-      <div className="container mb-8">
+      <div className="mb-8 container">
         <PageRange
           collection="posts"
           currentPage={posts.page}
