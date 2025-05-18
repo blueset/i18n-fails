@@ -18,7 +18,7 @@ export function RevalidateCache() {
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ path, type }),
+          body: JSON.stringify({ path, type: type || undefined }),
         })
         if (res.ok) {
           toast.success('Cache revalidated')
@@ -47,6 +47,7 @@ export function RevalidateCache() {
             required
             onChange={(e) => setType((Array.isArray(e) ? (e[0]?.value ?? '') : e.value) as string)}
             options={[
+              { label: '-', value: '' },
               { label: 'Layout', value: 'layout' },
               { label: 'Page', value: 'page' },
             ]}
