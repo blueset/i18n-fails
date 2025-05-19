@@ -133,4 +133,17 @@ export default buildConfig({
         },
       })
     : undefined,
+  onInit: async (payload) => {
+    if (!payload.collections['payload-preferences'].config.hooks.beforeChange.length) {
+      payload.collections['payload-preferences'].config.hooks.beforeChange.push((params) => {
+        if (
+          (params.operation === 'update' || params.operation === 'create') &&
+          params.data?.value?.limit === 1
+        ) {
+          params.data.value.limit = 50
+        }
+        return params.data
+      })
+    }
+  },
 })
