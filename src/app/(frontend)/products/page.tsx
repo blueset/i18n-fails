@@ -37,10 +37,10 @@ function TreeNode({ node, level }: { node: TreeProduct; level: number }) {
   return (
     <div>
       <Link
-        className="col-span-4 flex flex-row items-center gap-2 text-4xl font-light mb-4 hover:underline focus-visible:underline underline-offset-4"
+        className="flex flex-row items-center gap-2 col-span-4 mb-4 font-light text-4xl hover:underline focus-visible:underline underline-offset-4"
         href={`/${collection}/${node.slug}`}
       >
-        <ProductLogo product={node} className="h-8 w-8" />
+        <ProductLogo product={node} className="w-8 h-8" />
         {node.title}
       </Link>
       <div className="ml-4 md:ml-10">
@@ -58,7 +58,7 @@ export default async function Page() {
   const products = await payload.find({
     collection: 'products',
     depth: 1,
-    limit: -1,
+    limit: 0,
     pagination: false,
     overrideAccess: false,
     select: {
@@ -74,13 +74,13 @@ export default async function Page() {
 
   return (
     <div className="pt-24 pb-24">
-      <div className="container mb-16">
-        <div className="prose dark:prose-invert max-w-none">
+      <div className="mb-16 container">
+        <div className="dark:prose-invert max-w-none prose">
           <h1>Products</h1>
         </div>
       </div>
 
-      <div className="container mb-8">
+      <div className="mb-8 container">
         <div className="font-semibold">
           Showing {productCount} product{productCount === 1 ? '' : 's'} and {vendorCount} vendor
           {vendorCount === 1 ? '' : 's'}

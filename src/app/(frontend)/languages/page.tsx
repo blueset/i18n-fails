@@ -15,7 +15,7 @@ export default async function Page() {
   const languages = await payload.find({
     collection: 'languages',
     depth: 1,
-    limit: -1,
+    limit: 0,
     overrideAccess: false,
     sort: ['code'],
     select: {
@@ -28,13 +28,13 @@ export default async function Page() {
 
   return (
     <div className="pt-24 pb-24">
-      <div className="container mb-16">
-        <div className="prose dark:prose-invert max-w-none">
+      <div className="mb-16 container">
+        <div className="dark:prose-invert max-w-none prose">
           <h1>Languages</h1>
         </div>
       </div>
 
-      <div className="container mb-8">
+      <div className="mb-8 container">
         <div className="font-semibold">
           Showing {languages.totalDocs} language{languages.totalDocs === 1 ? '' : 's'}
         </div>
