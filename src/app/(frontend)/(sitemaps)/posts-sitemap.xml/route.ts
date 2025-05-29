@@ -24,12 +24,6 @@ const getPostsSitemap = unstable_cache(
           equals: 'published',
         },
       },
-      select: {
-        slug: true,
-        updatedAt: true,
-        sourceImages: true,
-        destinationImages: true,
-      },
     })
 
     const dateFallback = new Date().toISOString()
@@ -43,12 +37,16 @@ const getPostsSitemap = unstable_cache(
             ...(post.sourceImages?.length || post.destinationImages?.length
               ? {
                   images: [
-                    ...((post.sourceImages as Media[]) || []).map((image) => ({
-                      loc: new URL(`${SITE_URL}${image.url}`),
-                    })),
-                    ...((post.destinationImages as Media[]) || []).map((image) => ({
-                      loc: new URL(`${SITE_URL}${image.url}`),
-                    })),
+                    ...((post.sourceImages as Media[]) || [])
+                      .filter((image) => image.url)
+                      .map((image) => ({
+                        loc: new URL(`${SITE_URL}/${image.url}`),
+                      })),
+                    ...((post.destinationImages as Media[]) || [])
+                      .filter((image) => image.url)
+                      .map((image) => ({
+                        loc: new URL(`${SITE_URL}/${image.url}`),
+                      })),
                   ],
                 }
               : {}),

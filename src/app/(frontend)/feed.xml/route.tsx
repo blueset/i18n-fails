@@ -114,6 +114,11 @@ export async function GET() {
     depth: 1,
     limit: 12,
     draft: false,
+    where: {
+      _status: {
+        equals: 'published',
+      },
+    },
     overrideAccess: false,
   })
 
