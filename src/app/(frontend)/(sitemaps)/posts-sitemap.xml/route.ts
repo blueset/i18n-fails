@@ -40,12 +40,12 @@ const getPostsSitemap = unstable_cache(
                     ...((post.sourceImages as Media[]) || [])
                       .filter((image) => image.url)
                       .map((image) => ({
-                        loc: new URL(image.url),
+                        loc: new URL(image.url!),
                       })),
                     ...((post.destinationImages as Media[]) || [])
                       .filter((image) => image.url)
                       .map((image) => ({
-                        loc: new URL(image.url),
+                        loc: new URL(image.url!),
                       })),
                   ],
                 }
