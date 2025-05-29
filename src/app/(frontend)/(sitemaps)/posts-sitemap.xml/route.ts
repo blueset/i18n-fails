@@ -2,6 +2,7 @@ import { getServerSideSitemap } from 'next-sitemap'
 import { getPayload } from 'payload'
 import config from '@payload-config'
 import { unstable_cache } from 'next/cache'
+import { Media } from '@/payload-types'
 
 const getPostsSitemap = unstable_cache(
   async () => {
@@ -26,6 +27,8 @@ const getPostsSitemap = unstable_cache(
       select: {
         slug: true,
         updatedAt: true,
+        sourceImages: true,
+        destinationImages: true,
       },
     })
 
@@ -37,6 +40,18 @@ const getPostsSitemap = unstable_cache(
           .map((post) => ({
             loc: `${SITE_URL}/posts/${post?.slug}`,
             lastmod: post.updatedAt || dateFallback,
+            ...(post.sourceImages?.length || post.destinationImages?.length
+              ? {
+                  images: [
+                    ...((post.sourceImages as Media[]) || []).map((image) => ({
+                      url: `${SITE_URL}${image.url}`,
+                    })),
+                    ...((post.destinationImages as Media[]) || []).map((image) => ({
+                      url: `${SITE_URL}${image.url}`,
+                    })),
+                  ],
+                }
+              : {}),
           }))
       : []
 
