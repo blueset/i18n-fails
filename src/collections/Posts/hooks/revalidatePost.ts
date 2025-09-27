@@ -15,8 +15,16 @@ export const revalidatePost: CollectionAfterChangeHook<Post> = ({
 
       payload.logger.info(`Revalidating post at path: ${path}`)
 
-      revalidatePath(path)
-      revalidateTag('posts-sitemap')
+      try {
+        revalidatePath(path)
+      } catch (e) {
+        console.error(e, 'Error revalidating path', path)
+      }
+      try {
+        revalidateTag('posts-sitemap')
+      } catch (e) {
+        console.error(e, 'Error revalidating tag', 'posts-sitemap')
+      }
     }
 
     // If the post was previously published, we need to revalidate the old path
@@ -25,10 +33,23 @@ export const revalidatePost: CollectionAfterChangeHook<Post> = ({
 
       payload.logger.info(`Revalidating old post at path: ${oldPath}`)
 
-      revalidatePath(oldPath)
-      revalidateTag('posts-sitemap')
+      try {
+        revalidatePath(oldPath)
+      } catch (e) {
+        console.error(e, 'Error revalidating old path', oldPath)
+      }
+      try {
+        revalidateTag('posts-sitemap')
+      } catch (e) {
+        console.error(e, 'Error revalidating tag', 'posts-sitemap')
+      }
     }
-    revalidatePath('/')
+
+    try {
+      revalidatePath('/')
+    } catch (e) {
+      console.error(e, 'Error revalidating root path')
+    }
   }
   return doc
 }
