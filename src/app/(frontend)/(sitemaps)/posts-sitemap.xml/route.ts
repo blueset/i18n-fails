@@ -34,22 +34,6 @@ const getPostsSitemap = unstable_cache(
           .map((post) => ({
             loc: `${SITE_URL}/posts/${post?.slug}`,
             lastmod: post.updatedAt || dateFallback,
-            ...(post.sourceImages?.length || post.destinationImages?.length
-              ? {
-                  images: [
-                    ...((post.sourceImages as Media[]) || [])
-                      .filter((image) => image.url)
-                      .map((image) => ({
-                        loc: new URL(image.url!),
-                      })),
-                    ...((post.destinationImages as Media[]) || [])
-                      .filter((image) => image.url)
-                      .map((image) => ({
-                        loc: new URL(image.url!),
-                      })),
-                  ],
-                }
-              : {}),
           }))
       : []
 

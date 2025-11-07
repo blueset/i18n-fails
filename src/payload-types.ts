@@ -797,6 +797,18 @@ export interface Form {
             blockName?: string | null;
             blockType: 'textarea';
           }
+        | {
+            name: string;
+            label?: string | null;
+            width?: number | null;
+            defaultValue?: string | null;
+            required?: boolean | null;
+            provider?: ('recaptcha-v2' | 'hcaptcha' | 'turnstile') | null;
+            apiKey?: string | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'captcha';
+          }
       )[]
     | null;
   submitButtonLabel?: string | null;
@@ -1643,6 +1655,19 @@ export interface FormsSelect<T extends boolean = true> {
               width?: T;
               defaultValue?: T;
               required?: T;
+              id?: T;
+              blockName?: T;
+            };
+        captcha?:
+          | T
+          | {
+              name?: T;
+              label?: T;
+              width?: T;
+              defaultValue?: T;
+              required?: T;
+              provider?: T;
+              apiKey?: T;
               id?: T;
               blockName?: T;
             };

@@ -66,6 +66,11 @@ export const buildInitialFormState = (fields: ExtendedFormFieldBlock[]) => {
         ...initialSchema,
       }
     }
+    if (field.blockType === 'captcha') {
+      return {
+        ...initialSchema,
+      }
+    }
     throw new Error(`invalid blocktype: ${field.blockType}`)
   }, {})
 }

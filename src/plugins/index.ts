@@ -4,13 +4,17 @@ import { nestedDocsPlugin } from '@payloadcms/plugin-nested-docs'
 import { redirectsPlugin } from '@payloadcms/plugin-redirects'
 import { seoPlugin } from '@payloadcms/plugin-seo'
 import { searchPlugin } from '@payloadcms/plugin-search'
-import { Plugin } from 'payload'
+import { Field, Plugin } from 'payload'
 import { revalidateRedirects } from '@/hooks/revalidateRedirects'
 import { GenerateTitle, GenerateURL } from '@payloadcms/plugin-seo/types'
 import { FixedToolbarFeature, HeadingFeature, lexicalEditor } from '@payloadcms/richtext-lexical'
 import { searchFields } from '@/search/fieldOverrides'
 import { beforeSyncWithSearch } from '@/search/beforeSync'
 import computeBlurhash from 'payload-blurhash-plugin'
+import { fields } from '@payloadcms/plugin-form-builder'
+
+import { getPayload } from 'payload'
+import config from '@payload-config'
 
 import { Page, Post } from '@/payload-types'
 import { getServerSideURL } from '@/utilities/getURL'
@@ -64,6 +68,84 @@ export const plugins: Plugin[] = [
   formBuilderPlugin({
     fields: {
       payment: false,
+      captcha: {
+        ...fields.text,
+        slug: 'captcha',
+        fields: [
+          ...(fields.text as { fields: Field[] }).fields,
+          {
+            type: 'row',
+            fields: [
+              {
+                name: 'provider',
+                type: 'select',
+                label: 'Provider',
+                admin: {
+                  width: '50%',
+                },
+                options: [
+                  { label: 'reCAPTCHA v2', value: 'recaptcha-v2' },
+                  { label: 'hCaptcha', value: 'hcaptcha' },
+                  { label: 'Cloudflare Turnstile', value: 'turnstile' },
+                ],
+              },
+              {
+                name: 'apiKey',
+                type: 'text',
+                admin: {
+                  width: '50%',
+                },
+                label: 'API Key',
+                localized: true,
+              },
+            ],
+          },
+        ],
+        labels: {
+          singular: 'Captcha Field',
+          plural: 'Captcha Fields',
+        },
+      } as unknown as Partial<Field>,
+    },
+    handlePayment: async (data) => {
+      const payload = await getPayload({ config })
+      const form = await payload.findByID({
+        collection: 'forms',
+        id: data.data.form,
+      })
+      if (!form) throw new Error('Form not found')
+
+      const captchaKeys = form.fields?.find((f) => f.blockType === 'captcha')?.apiKey
+      if (!captchaKeys) {
+        console.log('No captcha configured, skipping verification')
+        return
+      }
+
+      const captchaToken = data.data.submissionData.find(
+        (s: { field: string }) => s.field === 'captcha',
+      )?.value
+      if (!captchaToken) throw new Error('Captcha token is missing')
+
+      const siteSecret = captchaKeys.split(',')[1]!
+
+      const response = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          secret: siteSecret,
+          response: captchaToken,
+        }),
+      })
+      const responseJson = await response.json()
+
+      if (!responseJson.success) {
+        console.error('Captcha verification failed:', responseJson)
+        throw new Error(`Captcha verification failed`)
+      }
+
+      return
     },
     formOverrides: {
       fields: ({ defaultFields }) => {
