@@ -10,6 +10,15 @@ type ExtendedFormFieldBlock =
       required?: boolean
       width?: number
     }
+  | {
+      blockName?: string
+      blockType: 'captcha'
+      name: string
+      required?: boolean
+      width?: number
+      provider: string
+      apiKey: string
+    }
 
 export const buildInitialFormState = (fields: ExtendedFormFieldBlock[]) => {
   return fields?.reduce((initialSchema, field) => {
