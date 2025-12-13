@@ -40,7 +40,7 @@ function RenderOneGallery({
   return (
     <div className="flex flex-col gap-8 col-span-1 md:col-span-1 col-start-1 md:col-start-2">
       <div>
-        <div className="flex md:flex-row flex-col md:justify-between gap-8">
+        <div className="flex flex-row flex-wrap md:justify-between gap-8">
           <div className="md:w-0 grow">
             <div className="mb-1 font-semilight text-sm">From</div>
             <LanguageLabel language={sourceLanguage} />
