@@ -12,7 +12,7 @@ function LanguageLabel({ language }: { language?: Language | null }) {
         <Button variant="link" size="clear" className="text-md" disabled>
           Unknown language
         </Button>
-        <div className="text-sm text-muted-foreground">�</div>
+        <div className="text-muted-foreground text-sm">�</div>
       </div>
     )
   }
@@ -21,7 +21,7 @@ function LanguageLabel({ language }: { language?: Language | null }) {
       <Button variant="link" size="clear" className="text-md" asChild>
         <Link href={`/languages/${language.slug}`}>{language.name}</Link>
       </Button>
-      <div className="text-sm text-muted-foreground" lang={language.code}>
+      <div className="text-muted-foreground text-sm" lang={language.code}>
         {language.nativeName}
       </div>
     </div>
@@ -38,17 +38,17 @@ function RenderOneGallery({
   images: Media[]
 }) {
   return (
-    <div className="col-start-1 col-span-1 md:col-start-2 md:col-span-1 flex flex-col gap-8">
+    <div className="flex flex-col gap-8 col-span-1 md:col-span-1 col-start-1 md:col-start-2">
       <div>
-        <div className="flex flex-col md:flex-row md:justify-between gap-8">
-          <div className="grow w-0">
-            <div className="font-semilight text-sm mb-1">From</div>
+        <div className="flex md:flex-row flex-col md:justify-between gap-8">
+          <div className="md:w-0 grow">
+            <div className="mb-1 font-semilight text-sm">From</div>
             <LanguageLabel language={sourceLanguage} />
           </div>
-          <ArrowRightIcon className="mt-6 mb-6 hidden md:block" />
-          <div className="grow w-0 md:text-right">
+          <ArrowRightIcon className="hidden md:block mt-6 mb-6" />
+          <div className="md:w-0 md:text-right grow">
             <div className="font-semilight text-sm">To</div>
-            <div className="flex flex-row flex-wrap gap-8 md:justify-end">
+            <div className="flex flex-row flex-wrap md:justify-end gap-8">
               {destinationLanguages?.length ? (
                 destinationLanguages.map((l) => <LanguageLabel key={l.id} language={l} />)
               ) : (
@@ -84,11 +84,11 @@ function RenderTwoGalleries({
   destinationImages: Media[]
 }) {
   return (
-    <div className="col-start-1 col-span-1 md:col-start-1 grid md:col-span-3 md:grid-cols-2 gap-8">
+    <div className="gap-8 grid md:grid-cols-2 col-span-1 md:col-span-3 col-start-1 md:col-start-1">
       <div className="flex flex-col gap-8">
         <div>
-          <div className="font-semilight text-sm mb-1">From</div>
-          <div className="flex justify-between items-center flex-row">
+          <div className="mb-1 font-semilight text-sm">From</div>
+          <div className="flex flex-row justify-between items-center">
             <div>
               <LanguageLabel language={sourceLanguage} />
             </div>
@@ -108,8 +108,8 @@ function RenderTwoGalleries({
       </div>
       <div className="flex flex-col gap-8">
         <div className="md:text-right">
-          <div className="font-semilight text-sm mb-1">To</div>
-          <div className="flex flex-row flex-wrap gap-8 md:justify-end">
+          <div className="mb-1 font-semilight text-sm">To</div>
+          <div className="flex flex-row flex-wrap md:justify-end gap-8">
             {destinationLanguages?.length ? (
               destinationLanguages.map((l) => <LanguageLabel key={l.id} language={l} />)
             ) : (
@@ -144,7 +144,7 @@ export const HeroGallery: React.FC<{
   const hasBothImages = sourceImages.length && destinationImages.length
 
   return (
-    <div className="container lg:grid lg:grid-cols-[1fr_48rem_1fr] pb-8">
+    <div className="lg:grid lg:grid-cols-[1fr_48rem_1fr] pb-8 container">
       {hasBothImages ? (
         <RenderTwoGalleries
           sourceImages={sourceImages}
