@@ -1,7 +1,8 @@
 import { convertHTMLToLexical, convertLexicalToHTML } from '@/fields/lexicalFormatters'
 import { mcpPlugin } from '@payloadcms/plugin-mcp'
-import { PayloadRequest } from 'payload'
+import { PayloadRequest, refreshOperation } from 'payload'
 import { z } from 'zod'
+import crypto from 'crypto'
 
 interface ProductTreeNode {
   id: string
@@ -173,7 +174,7 @@ All new products must have a name and a slug.
           sourceLanguage: z.string().min(1),
           externalLinks: z.string(),
         },
-        handler: (args) => {
+        handler: (args, req) => {
           return {
             messages: [
               {
@@ -234,6 +235,25 @@ Captions of the screenshots should highlight what is the failure in English. Tra
 - Use an emoji next to the words that can assist in distinguishing the intended meaning and the actual meaning (e.g. Space 🌌 / Space ⌨️)
 - Use parentheses or other textual notations to clarify the intended meaning (e.g. Use for new(ly opened) windows / Use for new Windows®)
 - Other ways to make the mistranslation clear
+
+To upload a screenshot as media, you will need to send the request directly through the Payload REST API. MCP does not have built-in support for uploading media. You can use the following endpoint to upload media:
+
+\`\`\`
+POST ${req.payload.getAPIURL()}/media
+Authorization: Bearer <get user token with a tool>
+Content-Type: multipart/form-data; boundary=----------ExampleBoundary
+
+----------ExampleBoundary
+Content-Disposition: form-data; name="file"; filename="file.png"
+Content-Type: image/png
+
+<binary content of the screenshot>
+----------ExampleBoundary
+Content-Disposition: form-data; name="_payload"
+
+{"filename": "file.png", "mimeType": "image/png", "alt": "<ALT text here>", "caption": <caption here in Lexical rich text JSON format>}
+----------ExampleBoundary--
+\`\`\`
 
 # Post Content
 Post content is not necessary if the screenshots and captions sufficiently explain the i18nfail. However, if additional context is needed, you can add a short paragraph before or after the screenshots to explain the situation. The post content can also include relevant knowledge about the failure that an average English reader may not know.
@@ -393,6 +413,59 @@ ${
               {
                 type: 'text',
                 text: JSON.stringify(serialized),
+              },
+            ],
+          }
+        },
+      },
+      {
+        name: 'getUserAuthToken',
+        description: 'Get an authentication token for the current user',
+        parameters: z.object({}).shape,
+        handler: async (args, req, extra) => {
+          const apiKey = req.headers.get('authorization')?.replace('Bearer ', '') || ''
+          const sha256APIKeyIndex = crypto
+            .createHmac('sha256', req.payload.secret)
+            .update(apiKey || '')
+            .digest('hex')
+
+          const { docs } = await req.payload.find({
+            collection: 'payload-mcp-api-keys',
+            depth: 1,
+            limit: 1,
+            pagination: false,
+            where: {
+              apiKeyIndex: {
+                equals: sha256APIKeyIndex,
+              },
+            },
+          })
+
+          const user = docs[0]?.user ?? null
+          req.user = user as PayloadRequest['user']
+          if (req.user) {
+            const sid = typeof user === 'object' ? user?.sessions?.[0]?.id : undefined
+            ;(req.user as unknown as { _sid?: string })._sid = sid
+          }
+
+          let message = ''
+          try {
+            const result = await refreshOperation({
+              req,
+              collection: req.payload.collections.users,
+            })
+            message = JSON.stringify({ token: result.refreshedToken })
+          } catch (err) {
+            message = JSON.stringify({
+              error: true,
+              message: (err as Error).message,
+            })
+          }
+          return {
+            content: [
+              {
+                type: 'text',
+                text: message,
               },
             ],
           }
