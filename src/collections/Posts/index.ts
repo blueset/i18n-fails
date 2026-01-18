@@ -27,7 +27,7 @@ import {
   PreviewField,
 } from '@payloadcms/plugin-seo/fields'
 import { slugField } from '@/fields/slug'
-import { InlineLangBlock } from '@/blocks/InlineLang/config'
+import { InlineIconBlock } from '@/blocks/InlineIcon/config'
 import { AbbrFeature } from '@/features/abbr/server'
 import { LangTagFeature } from '@/features/langTag/server'
 
@@ -152,7 +152,7 @@ export const Posts: CollectionConfig<'posts'> = {
                     HeadingFeature({ enabledHeadingSizes: ['h1', 'h2', 'h3', 'h4'] }),
                     BlocksFeature({
                       blocks: [Banner, Code, MediaBlock],
-                      inlineBlocks: [InlineLangBlock],
+                      inlineBlocks: [InlineIconBlock],
                     }),
                     InlineCodeFeature(),
                     FixedToolbarFeature(),

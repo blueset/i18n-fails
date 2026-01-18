@@ -187,13 +187,18 @@ export class LangTagNode extends ElementNode {
 
 function $convertLangTagElement(domNode: Node): DOMConversionOutput {
   let node: LangTagNode | null = null
-  if (domNode.nodeName === 'SPAN' && domNode instanceof HTMLElement && domNode.lang) {
+  if (
+    domNode.nodeName === 'SPAN' &&
+    'lang' in domNode &&
+    'getAttribute' in domNode &&
+    domNode.lang
+  ) {
     const content = domNode.textContent
     if (content !== null && content !== '') {
       node = $createLangTagNode({
         id: randstr(),
         fields: {
-          lang: domNode.getAttribute('lang') ?? '',
+          lang: (domNode as HTMLElement).getAttribute('lang') ?? '',
         },
       })
     }

@@ -12,13 +12,13 @@ import {
 import { anyone } from '../../access/anyone'
 import { authenticated } from '../../access/authenticated'
 import { slugField } from '@/fields/slug'
-import { InlineLangBlock } from '@/blocks/InlineLang/config'
 import { AbbrFeature } from '@/features/abbr/server'
 import { LangTagFeature } from '@/features/langTag/server'
 import { Banner } from '@/blocks/Banner/config'
 import { Code } from '@/blocks/Code/config'
 import { MediaBlock } from '@/blocks/MediaBlock/config'
 import { revalidateDelete, revalidatePost } from './revalidatePost'
+import { InlineIconBlock } from '@/blocks/InlineIcon/config'
 
 export const Categories: CollectionConfig = {
   slug: 'categories',
@@ -51,11 +51,9 @@ export const Categories: CollectionConfig = {
             HeadingFeature({ enabledHeadingSizes: ['h1', 'h2', 'h3', 'h4'] }),
             BlocksFeature({
               blocks: [Banner, Code, MediaBlock],
-              inlineBlocks: [InlineLangBlock],
+              inlineBlocks: [InlineIconBlock],
             }),
             InlineCodeFeature(),
-            FixedToolbarFeature(),
-            InlineToolbarFeature(),
             HorizontalRuleFeature(),
             AbbrFeature(),
             LangTagFeature(),

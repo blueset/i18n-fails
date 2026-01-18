@@ -1,6 +1,7 @@
 import { type CollectionConfig } from 'payload'
 
 import {
+  BlocksFeature,
   FixedToolbarFeature,
   HeadingFeature,
   HorizontalRuleFeature,
@@ -15,6 +16,7 @@ import { anyone } from '../access/anyone'
 import { authenticated } from '../access/authenticated'
 import { AbbrFeature } from '@/features/abbr/server'
 import { LangTagFeature } from '@/features/langTag/server'
+import { InlineIconBlock } from '@/blocks/InlineIcon/config'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -40,6 +42,9 @@ export const Media: CollectionConfig = {
           return [
             ...defaultFeatures,
             HeadingFeature({ enabledHeadingSizes: ['h1', 'h2', 'h3', 'h4'] }),
+            BlocksFeature({
+              inlineBlocks: [InlineIconBlock],
+            }),
             FixedToolbarFeature(),
             InlineToolbarFeature(),
             HorizontalRuleFeature(),

@@ -183,13 +183,13 @@ export class AbbrNode extends ElementNode {
 
 function $convertAbbrElement(domNode: Node): DOMConversionOutput {
   let node: AbbrNode | null = null
-  if (domNode.nodeName === 'ABBR' && domNode instanceof HTMLElement) {
+  if (domNode.nodeName === 'ABBR' && 'getAttribute' in domNode) {
     const content = domNode.textContent
     if (content !== null && content !== '') {
       node = $createAbbrNode({
         id: randstr(),
         fields: {
-          title: domNode.getAttribute('title') ?? '',
+          title: (domNode as HTMLElement).getAttribute('title') ?? '',
         },
       })
     }

@@ -20,6 +20,7 @@ import { Page, Post } from '@/payload-types'
 import { getServerSideURL } from '@/utilities/getURL'
 import { siteDescription, siteTitle } from '@/utilities/constants'
 import { limitPlugin } from './limitPlugin'
+import { mcpPluginConfig } from './mcp'
 
 const generateTitle: GenerateTitle<Post | Page> = ({ doc }) => {
   return doc?.title || siteTitle
@@ -181,4 +182,5 @@ export const plugins: Plugin[] = [
   payloadCloudPlugin(),
   limitPlugin,
   computeBlurhash(),
+  mcpPluginConfig,
 ]

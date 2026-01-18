@@ -5,24 +5,15 @@ import configPromise from '@payload-config'
 import { getPayload } from 'payload'
 import RSS from 'rss'
 import { Fragment } from 'react'
-import {
-  consolidateHTMLConverters,
-  convertLexicalNodesToHTML,
-  convertLexicalToHTML,
-  defaultEditorConfig,
-  defaultEditorFeatures,
-  HTMLConverterFeature,
-  sanitizeServerEditorConfig,
-} from '@payloadcms/richtext-lexical'
 import { SerializedEditorState } from '@payloadcms/richtext-lexical/lexical'
-import escapeHTML from 'escape-html'
+import { convertLexicalToHTML } from '@/fields/lexicalFormatters'
 
 async function FeedPostBody({
   post,
   richTextToHTML,
 }: {
   post: Post
-  richTextToHTML: (data: SerializedEditorState) => Promise<string>
+  richTextToHTML: (data: SerializedEditorState) => string
 }) {
   const sourceLanguage = post.sourceLanguage as Language
   const destinationLanguages = (post.destinationLanguages as Language[]) ?? []
@@ -30,7 +21,6 @@ async function FeedPostBody({
   const destinationImages = (post.destinationImages as Media[]) ?? []
   const product = post.product as Product
   const productBreadcrumbs = (product?.breadcrumbs ?? []) as { label: string }[]
-  const siteUrl = getServerSideURL()
 
   return (
     <div>
@@ -53,9 +43,7 @@ async function FeedPostBody({
           <figure key={image.id}>
             <img src={'' + image.url} alt={image.alt ?? ''} />
             {image.caption && (
-              <figcaption
-                dangerouslySetInnerHTML={{ __html: await richTextToHTML(image.caption) }}
-              />
+              <figcaption dangerouslySetInnerHTML={{ __html: richTextToHTML(image.caption) }} />
             )}
           </figure>
         )),
@@ -76,16 +64,12 @@ async function FeedPostBody({
           <figure key={image.id}>
             <img src={'' + image.url} alt={image.alt ?? ''} />
             {image.caption && (
-              <figcaption
-                dangerouslySetInnerHTML={{ __html: await richTextToHTML(image.caption) }}
-              />
+              <figcaption dangerouslySetInnerHTML={{ __html: richTextToHTML(image.caption) }} />
             )}
           </figure>
         )),
       )}
-      {post.content && (
-        <div dangerouslySetInnerHTML={{ __html: await richTextToHTML(post.content) }} />
-      )}
+      {post.content && <div dangerouslySetInnerHTML={{ __html: richTextToHTML(post.content) }} />}
     </div>
   )
 }
@@ -122,66 +106,9 @@ export async function GET() {
     overrideAccess: false,
   })
 
-  const editorConfig = defaultEditorConfig
-  editorConfig.features = [...defaultEditorFeatures, HTMLConverterFeature({})]
-  const sanitizedEditorConfig = await sanitizeServerEditorConfig(editorConfig, await configPromise)
-
   const richTextToHTML = (data: SerializedEditorState) =>
     convertLexicalToHTML({
-      converters: [
-        ...consolidateHTMLConverters({ editorConfig: sanitizedEditorConfig }),
-        {
-          nodeTypes: ['unknown'],
-          converter: async ({ node, parent, ...args }) => {
-            if (node.type === 'block') {
-              const blockType = (node as any).fields.blockType
-              if (blockType === 'mediaBlock') {
-                const media = (node as any).fields.media
-                return `<figure>
-                  <img src="${escapeHTML(media.url)}" alt="${escapeHTML(media.alt)}" />
-                  <figcaption>${media.caption ? await convertLexicalNodesToHTML({ lexicalNodes: media.caption.root.children, parent: { ...node, parent }, ...args }) : ''}</figcaption>
-                </figure>`
-              } else if (blockType === 'banner') {
-                const style = (node as any).fields.style
-                const content = (node as any).fields.content.root.children
-                const styleEmoji =
-                  style === 'info'
-                    ? 'ℹ️'
-                    : style === 'error'
-                      ? '❌'
-                      : style === 'success'
-                        ? '✅'
-                        : style === 'warning'
-                          ? '⚠️'
-                          : `[${style}]`
-                return `<blockquote>${styleEmoji} ${await convertLexicalNodesToHTML({ lexicalNodes: content, parent: { ...node, parent }, ...args })}</blockquote>`
-              }
-              return `<div>[Block (${blockType}): ${(node as any).fields.blockName || '-'}]</div>`
-            }
-            if (node.type === 'langTag') {
-              return `<span lang="${escapeHTML((node as any).fields.lang)}">${await convertLexicalNodesToHTML(
-                {
-                  lexicalNodes: (node as any).children,
-                  parent: { ...node, parent },
-                  ...args,
-                },
-              )}</span>`
-            }
-            if (node.type === 'abbr') {
-              return `<abbr title="${escapeHTML((node as any).fields.title)}">${await convertLexicalNodesToHTML(
-                {
-                  lexicalNodes: (node as any).children,
-                  parent: { ...node, parent },
-                  ...args,
-                },
-              )}</abbr>`
-            }
-            return `<div>[Node: ${node.type}]</div>`
-          },
-        },
-      ],
       data,
-      payload,
     })
 
   for (const post of posts.docs) {
