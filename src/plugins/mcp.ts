@@ -134,7 +134,7 @@ export const mcpPluginConfig = mcpPlugin({
         argsSchema: {
           productName: z.string().min(1),
         },
-        handler: (args) => {
+        handler: (args, req) => {
           return {
             messages: [
               {
@@ -158,6 +158,25 @@ If you found an SVG logo, and the logo contains a black or white shape on a tran
 Logos need to have proper ALT text, usually in the format “Logo of [Product Name]”. Logos do not need to have captions.
 
 All new products must have a name and a slug.
+
+To upload a logo as media, you will need to send the request directly through the Payload REST API. MCP does not have built-in support for uploading media. You can use the following endpoint to upload media:
+
+\`\`\`
+POST ${req.payload.getAPIURL()}/media
+Authorization: Bearer <get user token with a tool>
+Content-Type: multipart/form-data; boundary=----------ExampleBoundary
+
+----------ExampleBoundary
+Content-Disposition: form-data; name="file"; filename="file.png"
+Content-Type: image/png
+
+<binary content of the screenshot>
+----------ExampleBoundary
+Content-Disposition: form-data; name="_payload"
+
+{"filename": "file.png", "mimeType": "image/png", "alt": "<ALT text here>", "caption": <caption here in Lexical rich text JSON format>}
+----------ExampleBoundary--
+\`\`\`
 `,
                 },
               },
