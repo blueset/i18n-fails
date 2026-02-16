@@ -44,9 +44,11 @@ function TreeNode({ node, level }: { node: TreeProduct; level: number }) {
         {node.title}
       </Link>
       <div className="ml-4 md:ml-10">
-        {node.children.map((child) => (
-          <TreeNode key={child.id} node={child} level={level + 1} />
-        ))}
+        {node.children
+          .sort((a, b) => a.title.localeCompare(b.title))
+          .map((child) => (
+            <TreeNode key={child.id} node={child} level={level + 1} />
+          ))}
       </div>
     </div>
   )
