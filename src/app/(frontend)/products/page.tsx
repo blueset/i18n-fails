@@ -45,7 +45,9 @@ function TreeNode({ node, level }: { node: TreeProduct; level: number }) {
       </Link>
       <div className="ml-4 md:ml-10">
         {node.children
-          .sort((a, b) => a.title.localeCompare(b.title))
+          .sort((a, b) =>
+            a.title.localeCompare(b.title, undefined, { numeric: true, sensitivity: 'base' }),
+          )
           .map((child) => (
             <TreeNode key={child.id} node={child} level={level + 1} />
           ))}
@@ -91,7 +93,9 @@ export default async function Page() {
 
       <div className="container">
         {tree
-          .sort((a, b) => a.title.localeCompare(b.title))
+          .sort((a, b) =>
+            a.title.localeCompare(b.title, undefined, { numeric: true, sensitivity: 'base' }),
+          )
           .map((node) => (
             <TreeNode key={node.id} node={node} level={0} />
           ))}
