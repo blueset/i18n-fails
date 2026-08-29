@@ -20,30 +20,9 @@ RUN \
 # Rebuild the source code only when needed
 FROM base AS builder
 WORKDIR /app
-RUN apt-get update && apt-get install -y curl gnupg
-RUN curl -fsSL https://www.mongodb.org/static/pgp/server-8.0.asc | \
-    gpg -o /usr/share/keyrings/mongodb-server-8.0.gpg \
-    --dearmor
-RUN echo "deb [ signed-by=/usr/share/keyrings/mongodb-server-8.0.gpg ] http://repo.mongodb.org/apt/debian bookworm/mongodb-org/8.0 main" | tee /etc/apt/sources.list.d/mongodb-org-8.0.list
-
-RUN apt-get update && apt-get install -y mongodb-org 
 
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
-
-# Start MongoDB
-RUN mkdir -p /data/db
-
-# Restore backup if it exists
-RUN if [ -d "mongodb-backup" ]; then \
-    cd mongodb-backup && \
-    tar xzf *.tar.gz && \
-    mongod --fork --logpath /var/log/mongod.log --bind_ip_all && \
-    mongorestore --host 127.0.0.1 --nsInclude 'i18nfails.*' ./mongodb_backup_*/ && \
-    cd ..; \
-    fi
-
-ENV DATABASE_URI=mongodb://localhost:27017/i18nfails
 
 # Next.js collects completely anonymous telemetry data about general usage.
 # Learn more here: https://nextjs.org/telemetry
@@ -51,10 +30,9 @@ ENV DATABASE_URI=mongodb://localhost:27017/i18nfails
 # ENV NEXT_TELEMETRY_DISABLED 1
 
 RUN \
-  mongod --fork --logpath /var/log/mongod.log --bind_ip_all && \
-  if [ -f yarn.lock ]; then yarn run build; \
-  elif [ -f package-lock.json ]; then npm run build; \
-  elif [ -f pnpm-lock.yaml ]; then corepack prepare pnpm@10.25.0 --activate && corepack enable pnpm && pnpm run build; \
+  if [ -f yarn.lock ]; then yarn next build --experimental-build-mode compile && yarn next build --experimental-build-mode generate-env && yarn next-sitemap --config next-sitemap.config.cjs; \
+  elif [ -f package-lock.json ]; then npx next build --experimental-build-mode compile && npx next build --experimental-build-mode generate-env && npx next-sitemap --config next-sitemap.config.cjs; \
+  elif [ -f pnpm-lock.yaml ]; then corepack prepare pnpm@10.25.0 --activate && corepack enable pnpm && pnpm exec next build --experimental-build-mode compile && pnpm exec next build --experimental-build-mode generate-env && pnpm exec next-sitemap --config next-sitemap.config.cjs; \
   else echo "Lockfile not found." && exit 1; \
   fi
 

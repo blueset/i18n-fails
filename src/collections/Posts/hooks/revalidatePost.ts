@@ -21,7 +21,7 @@ export const revalidatePost: CollectionAfterChangeHook<Post> = ({
         console.error(e, 'Error revalidating path', path)
       }
       try {
-        revalidateTag('posts-sitemap')
+        revalidateTag('posts-sitemap', 'max')
       } catch (e) {
         console.error(e, 'Error revalidating tag', 'posts-sitemap')
       }
@@ -39,7 +39,7 @@ export const revalidatePost: CollectionAfterChangeHook<Post> = ({
         console.error(e, 'Error revalidating old path', oldPath)
       }
       try {
-        revalidateTag('posts-sitemap')
+        revalidateTag('posts-sitemap', 'max')
       } catch (e) {
         console.error(e, 'Error revalidating tag', 'posts-sitemap')
       }
@@ -60,7 +60,7 @@ export const revalidateDelete: CollectionAfterDeleteHook<Post> = ({ doc, req: { 
 
     revalidatePath(path)
     revalidatePath('/')
-    revalidateTag('posts-sitemap')
+    revalidateTag('posts-sitemap', 'max')
   }
 
   return doc

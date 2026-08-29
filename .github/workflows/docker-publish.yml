@@ -38,6 +38,13 @@ jobs:
         run: |
           curl -v http://${{ secrets.VPS_HOST }}
 
+      - name: Set up SSH
+        run: |
+          mkdir -v -m 700 $HOME/.ssh
+          ssh-keyscan -H ${{ secrets.VPS_HOST }} > $HOME/.ssh/known_hosts
+          echo "${{ secrets.SSH_KEY }}" > $HOME/.ssh/id_rsa
+          chmod 400 $HOME/.ssh/id_rsa
+
       - name: Extract metadata for Docker
         id: meta
         uses: docker/metadata-action@v5
@@ -49,36 +56,6 @@ jobs:
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
             type=sha,format=long
-
-      - name: Execute MongoDB dump
-        run: |
-          mkdir -v -m 700 $HOME/.ssh
-          ssh-keyscan -H ${{ secrets.VPS_HOST }} > $HOME/.ssh/known_hosts
-          echo "${{ secrets.SSH_KEY }}" > $HOME/.ssh/id_rsa
-          chmod 400 $HOME/.ssh/id_rsa
-
-          TIMESTAMP=$(date +%Y%m%d_%H%M%S)
-
-          echo "cd ${{ secrets.MONGO_PATH }} ++ docker compose exec mongo mongodump --out=/tmp/backup"
-          ssh -i $HOME/.ssh/id_rsa ${{ secrets.VPS_USERNAME }}@${{ secrets.VPS_HOST }} "cd ${{ secrets.MONGO_PATH }} && docker compose exec mongo mongodump --out=/tmp/backup"
-
-          echo "cd ${{ secrets.MONGO_PATH }} ++ docker compose cp mongo:/tmp/backup /tmp/mongodb_backup_${TIMESTAMP}"
-          ssh -i $HOME/.ssh/id_rsa ${{ secrets.VPS_USERNAME }}@${{ secrets.VPS_HOST }} "cd ${{ secrets.MONGO_PATH }} && docker compose cp mongo:/tmp/backup /tmp/mongodb_backup_${TIMESTAMP}"
-
-          echo "cd /tmp ++ tar -czf mongodb_backup_${TIMESTAMP}.tar.gz mongodb_backup_${TIMESTAMP}"
-          ssh -i $HOME/.ssh/id_rsa ${{ secrets.VPS_USERNAME }}@${{ secrets.VPS_HOST }} "cd /tmp && tar -czf mongodb_backup_${TIMESTAMP}.tar.gz mongodb_backup_${TIMESTAMP}"
-
-          echo "cd ${{ secrets.MONGO_PATH }} ++ docker compose exec mongo rm -rf /tmp/backup"
-          ssh -i $HOME/.ssh/id_rsa ${{ secrets.VPS_USERNAME }}@${{ secrets.VPS_HOST }} "cd ${{ secrets.MONGO_PATH }} && docker compose exec mongo rm -rf /tmp/backup"
-
-          echo mkdir ./mongodb-backup/
-          mkdir ./mongodb-backup/
-
-          echo "scp -i $HOME/.ssh/id_rsa ${{ secrets.VPS_USERNAME }}@${{ secrets.VPS_HOST }}:/tmp/mongodb_backup_*.tar.gz ./mongodb-backup/"
-          scp -i $HOME/.ssh/id_rsa ${{ secrets.VPS_USERNAME }}@${{ secrets.VPS_HOST }}:/tmp/mongodb_backup_*.tar.gz ./mongodb-backup/
-
-          echo "ssh -i $HOME/.ssh/id_rsa ${{ secrets.VPS_USERNAME }}@${{ secrets.VPS_HOST }} rm -rf /tmp/mongodb_backup_*"
-          ssh -i $HOME/.ssh/id_rsa ${{ secrets.VPS_USERNAME }}@${{ secrets.VPS_HOST }} "rm -rf /tmp/mongodb_backup_*"
 
       - name: Write .env file
         run: |
@@ -96,11 +73,6 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
-
-      - name: Cleanup MongoDB backup
-        if: always()
-        run: |
-          rm -rf mongodb-backup/
 
       - name: Deploy build
         run: |
