@@ -16,14 +16,19 @@ services:
       - app-network
 
   mongo:
-    image: mongo:latest
+    image: mongo:8.3
     restart: unless-stopped
+    environment:
+      - GLIBC_TUNABLES=glibc.pthread.rseq=1
     command:
       - --storageEngine=wiredTiger
     volumes:
       - data:/data/db
     logging:
-      driver: none
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: "3"
     networks:
       - app-network
 
